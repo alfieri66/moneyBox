@@ -1,0 +1,396 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>money BOX</title>
+    <link href="css/styles.css" rel="stylesheet" />
+    <link href="css/myStyles.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.min.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="js/scripts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    <script src="assets/demo/chart-area-demo.js"></script>
+    <script src="assets/demo/chart-bar-demo.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+    <script src="assets/demo/datatables-demo.js"></script>
+    <script src="js/jsScriptComuni.js"></script>
+    <script src="js/jsCassa.js"></script>
+    <script src="js/jsLocali.js"></script>
+    <script src="js/jsUtenti.js"></script>
+    <style>
+        a.menuColorato {
+            color: white;
+            text-decoration: none;
+        }
+
+        a.listaMovimenti {
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #212529;
+            text-align: left;
+            text-decoration: none;
+        }
+    </style>
+
+</head>
+<body class="sb-nav-fixed">
+
+    <div id="attesa" class="modal"> </div>
+
+    <div id="pagLogin" class="modal" tabindex="-1" role="dialog" data-backdrop="false">
+        <div id="layoutAuthentication_content">
+            <main>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-5">
+                            <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                <div class="card-header"><h3 class="text-center font-weight-light my-4">Login</h3></div>
+                                <div class="card-body">
+                                    <form>
+                                        <div class="form-group"><label class="small mb-1" for="inputEmailAddress">Email</label><input class="form-control py-4" id="inputEmailAddress" value="" type="email" placeholder="Enter email address" /></div>
+                                        <div class="form-group"><label class="small mb-1" for="inputPassword">Password</label><input class="form-control py-4" id="inputPassword" value="" type="password" placeholder="Enter password" /></div>
+                                        <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0">
+                                            <a class="small" href="#">Password dimenticata?</a>
+                                            <a class="btn btn-primary" onclick="esisteUtente();">Login</a>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="card-footer text-center">
+                                    <div id="lblRisultato" class="small" style="color:red; font-weight: bold;">&nbsp;</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+    </div>
+
+
+    <div id="panelMessaggio" class="modal" tabindex="-1" role="dialog" data-backdrop="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title" id="intestazioneMessaggio">Messaggio</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" id="messaggio" name="messaggio">
+
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Chiudi</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="panelCambiaPassword" class="modal" tabindex="-1" role="dialog" data-backdrop="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="container">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td>
+                                    <img src="/Admin/immagini/utenteCol.png" alt="Avatar" class="avatar" style="width: 30px">
+                                </td>
+                                <td style="width: 100%; text-align: left;">
+                                    &nbsp; Cambia password
+                                </td>
+                                <td style="text-align: right;">
+                                    <span onclick="$('#panelCambiaPassword').modal('hide')" class="close" title="Close Modal">&times;</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-body">
+
+
+                    <div class="container">
+                        <label class="small mb-1" for="chgEmailAddress">Email</label>
+                        <input class="form-control py-4" id="chgEmailAddress" value="" type="email" placeholder="indirizzo email" />
+                        <label class="small mb-1" for="chgPassword">Password</label>
+                        <input class="form-control py-4" id="chgPassword" value="" type="password" placeholder="Enter password" required />
+                        <label class="small mb-1" for="chgNuovaEmail">Nuova Email</label>
+                        <input class="form-control py-4" id="chgNuovaEmail" value="" type="email" placeholder="indirizzo nuova email" pattern="[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" />
+                        <label class="small mb-1" for="chgNuovaPassword">Nuova Password</label>
+                        <input class="form-control py-4" id="chgNuovaPassword" value="" type="password" placeholder="nuova password" required />
+                        <label class="small mb-1" for="chgRipetiPassword">Ripeti password</label>
+                        <input class="form-control py-4" id="chgRipetiPassword" value="" type="password" placeholder="ripeti password" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-info" onclick="$('#panelCambiaPassword').modal('hide')" style="color:white">Annulla</a>
+                    <a class="btn btn-success" onclick="aggiornaUtente();" style="color:white">Cambia</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <a class="navbar-brand" href="index.html"> Money BOX</a>
+
+        <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+            <div class="input-group">
+            </div>
+        </form>
+        <ul class="navbar-nav ml-auto ml-md-0">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="userDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fas fa-user fa-fw"> </i> </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" onclick="attivaArea('cassa');"> Cassa </a>
+                    <a class="dropdown-item" onclick="attivaArea('utenti');"> Agenti </a>
+                    <a class="dropdown-item" onclick="attivaArea('locali');"> Locali </a>
+                    <div class="dropdown-divider"> </div>
+                    <a class="dropdown-item" onclick="$('#panelCambiaPassword').modal('show');"> Cambia password </a>
+                    <div class="dropdown-divider"> </div>
+                    <a class="dropdown-item" href="#" onclick="logout();"> Logout</a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading"> Menù (v. 20.06.02) </div>
+                        <a class="nav-link" href="#" onclick="attivaArea('cassa');">
+                            <div class="sb-nav-link-icon"> <i class="fas fa-coins"> </i> </div>
+                            Cassa
+                        </a>
+                        <a class="nav-link collapsed" href="#" onclick="attivaArea('utenti');">
+                            <div class="sb-nav-link-icon"> <i class="far fa-address-card"> &nbsp;</i> </div>
+                            Agenti
+                        </a>
+                        <a class="nav-link" href="#" onclick="attivaArea('locali');">
+                            <div class="sb-nav-link-icon"> <i class="fas fa-hotel"> </i> </div>
+                            Locali
+                        </a>
+                        <a class="nav-link" href="#" onclick="btnDownloadApk();">
+                            <div class="sb-nav-link-icon"> <i class="fas fa-download"> </i> </div>
+                            Money Smart
+                        </a>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small"> Logged in only as:</div>
+                    Administrator
+                </div>
+            </nav>
+        </div>
+        <div id="layoutSidenav_content">
+            <main id="pagCassa">
+                <div class="container-fluid">
+                    <h1 class="mt-4" style="padding-bottom: 4px; padding-left: 4px; ">CASSA</h1>
+                    <!--
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item active">&nbsp;</li>
+                    </ol>
+                    -->
+
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-primary text-white mb-4">
+                                <div class="card-body"> <i class="far fa-calendar-alt"> &nbsp; </i> Ricerca per data </div>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="date" class="form-control" id="startDate" placeholder="gg/mm/aaaa">
+                            </div>
+                            <div class="form-group">
+                                <input type="date" class="form-control" id="endDate" placeholder="gg/mm/aaaa">
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-warning text-white mb-4">
+                                <div class="card-body"><i class="far fa-address-card"> &nbsp;</i> Utente </div>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="txtUnome" placeholder="Nome" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="txtUcognome" placeholder="Cognome" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-success text-white mb-4">
+                                <div class="card-body"> <i class="fas fa-hotel"> </i> Locale</div>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="txtLocale" placeholder="nome locale">
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card bg-danger text-white mb-4">
+                                <div class="card-body"><i class="far fa-envelope"> </i> <a href="#" class="menuColorato" onclick="btnInviaMail();">&nbsp; e-mail</a></div>
+                            </div>
+                            <div class="form-group">
+                                <span class="form-control" id="lblMessaggio" style="color: red"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header"> <i class="fas fa-table mr-1"> </i> <a href="#" class="listaMovimenti" onclick="btnRicercaCassa();">Lista movimenti </a><span id="txtNumPagine">(pag. 0 di 0)</span> </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table>
+                                    <tr>
+                                        <td><button type="button" class="btn btn-light" onclick="cambiaPagina('-');"><</button></td>
+                                        <td width="10px">&nbsp;</td>
+                                        <td><button type="button" class="btn btn-light" onclick="cambiaPagina('+');">></button></td>
+                                        <td width="10px">&nbsp;</td>
+                                        <td><button type="button" class="btn btn-light" onclick="cambiaPagina('*');"><i class="far fa-eye"> </i></button></td>
+                                        <td width="100%">&nbsp;</td>
+                                        <td><button type="button"  style="width: 125px;" class="btn btn-danger" onclick="btnRicercaCassa();"><i class="fas fa-redo-alt"></i>&nbsp; Annulla</button></td>
+                                        <td width="10px">&nbsp;</td>
+                                        <td><button type="button" style="width: 125px;" class="btn btn-success" onclick="salvaModificheCassa();"  ><i class="fas fa-pencil-alt"></i>&nbsp; Salva </button></td>
+
+
+                                    </tr>
+                                </table>
+                                <br />
+
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th> stato </th>
+                                            <th> data </th>
+                                            <th> Locale</th>
+                                            <th> Utente</th>
+                                            <th style="text-align: right"> Acconto</th>
+                                            <th style="text-align: right"> Recupero <br /> da riportare</th>
+                                            <th style="text-align: right"> da Riportare</th>
+                                            <th> &nbsp; </th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th> </th>
+                                            <th> </th>
+                                            <th> </th>
+                                            <th> </th>
+                                            <th style="text-align: right"> <div id="txtValAcconto">€ - </div> </th>
+                                            <th style="text-align: right"> <div id="txtValRecupero">€ - </div> </th>
+                                            <th style="text-align: right"> <div id="txtValDaRiportare">€ - </div> </th>
+                                            <th> </th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody id="datiTabella">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <main id="pagLocali">
+                <div class="container-fluid">
+                    <h1 class="mt-4" style="padding-bottom: 4px; padding-left: 4px; ">Locali</h1>
+                    <div class="card mb-4">
+                        <div class="card-header"> <i class="fas fa-table mr-1"> </i> <a href="#" class="listaMovimenti" onclick="btnLeggiLocali();">Lista locali</a> <span id="lblNumLocali"></span> </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table>
+                                    <tr>
+                                        <td><button type="button" class="btn btn-warning" style="color: white;" onclick="aggiungiRigaLocale();"><i class="far fa-file-alt"></i>&nbsp; Nuovo</button></td>
+                                        <td width="10px">&nbsp;</td>
+                                        <td><button type="button" class="btn btn-danger" onclick="btnLeggiLocali();"><i class="fas fa-redo-alt"></i>&nbsp; Annulla</button></td>
+                                        <td width="10px">&nbsp;</td>
+                                        <td><button type="button" class="btn btn-success" onclick="salvaModificheLocali();"><i class="fas fa-pencil-alt"></i>&nbsp; Salva</button></td>
+                                    </tr>
+                                </table>
+                                <br />
+
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th> stato </th>
+                                            <th> Nome</th>
+                                            <th> Indirizzo</th>
+                                            <th> Città</th>
+                                            <th> Telefono</th>
+                                            <th> &nbsp;</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="datiTabellaLocali">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <main id="pagUtenti">
+                <div class="container-fluid">
+                    <h1 class="mt-4" style="padding-bottom: 4px; padding-left: 4px; ">Agenti</h1>
+                    <div class="card mb-4">
+                        <div class="card-header"> <i class="fas fa-table mr-1"> </i> <a href="#" class="listaMovimenti" onclick="btnLeggiUtenti();">Lista agenti</a> <span id="lblNumUtenti"></span> </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table>
+                                    <tr>
+                                        <td><button type="button" class="btn btn-warning" style="color: white;" onclick="aggiungiRigaUtente();"><i class="far fa-file-alt"></i>&nbsp; Nuovo</button></td>
+                                        <td width="10px">&nbsp;</td>
+                                        <td><button type="button" class="btn btn-danger" onclick="btnLeggiUtenti();"><i class="fas fa-redo-alt"></i>&nbsp; Annulla</button></td>
+                                        <td width="10px">&nbsp;</td>
+                                        <td><button type="button" class="btn btn-success" onclick="salvaModificheUtenti();"><i class="fas fa-pencil-alt"></i>&nbsp; Salva</button></td>
+                                    </tr>
+                                </table>
+                                <br />
+
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th> stato </th>
+                                            <th> Nome</th>
+                                            <th> Cognome</th>
+                                            <th> email</th>
+                                            <th> password</th>
+                                            <th> &nbsp;</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="datiTabellaUtenti">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted"> 71042 - Cerignola FG</div>
+                        <div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+</body>
+</html >

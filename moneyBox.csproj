@@ -1,0 +1,257 @@
+﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E69706A1-2F3F-41BF-918E-9E39B45F44B9}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>moneyBox</RootNamespace>
+    <AssemblyName>moneyBox</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort>44348</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.5.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
+      <HintPath>packages\Portable.BouncyCastle.1.8.5\lib\net40\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Protobuf, Version=3.6.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Protobuf.3.6.1\lib\net45\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="MailKit, Version=2.5.0.0, Culture=neutral, PublicKeyToken=4e064fe7c44a8f1b, processorArchitecture=MSIL">
+      <HintPath>packages\MailKit.2.6.0\lib\net46\MailKit.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MigraDoc.DocumentObjectModel, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>packages\PDFsharp-MigraDoc.1.50.5147\lib\net20\MigraDoc.DocumentObjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="MigraDoc.Rendering, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>packages\PDFsharp-MigraDoc.1.50.5147\lib\net20\MigraDoc.Rendering.dll</HintPath>
+    </Reference>
+    <Reference Include="MigraDoc.RtfRendering, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>packages\PDFsharp-MigraDoc.1.50.5147\lib\net20\MigraDoc.RtfRendering.dll</HintPath>
+    </Reference>
+    <Reference Include="MimeKit, Version=2.6.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
+      <HintPath>packages\MimeKit.2.6.0\lib\net46\MimeKit.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.10.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>packages\MySql.Data.6.10.9\lib\net452\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>packages\PDFsharp-MigraDoc.1.50.5147\lib\net20\PdfSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>packages\PDFsharp-MigraDoc.1.50.5147\lib\net20\PdfSharp.Charting.dll</HintPath>
+    </Reference>
+    <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <HintPath>packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Admin\.browserslistrc" />
+    <Content Include="Admin\.gitignore" />
+    <Content Include="Admin\.travis.yml" />
+    <Content Include="Admin\dist\css\myStyles.css" />
+    <Content Include="Admin\dist\js\jsCassa.js" />
+    <Content Include="Admin\dist\js\jsUtenti.js" />
+    <Content Include="Admin\dist\js\jsLocali.js" />
+    <Content Include="Admin\dist\js\jsScriptComuni.js" />
+    <Content Include="Admin\dist\reset.html" />
+    <Content Include="Admin\immagini\utenteCol.png" />
+    <Content Include="Admin\LICENSE" />
+    <Content Include="Admin\package-lock.json" />
+    <Content Include="Admin\package.json" />
+    <Content Include="Admin\README.md" />
+    <Content Include="Admin\src\pug\layouts\authentication.pug" />
+    <Content Include="Admin\src\pug\layouts\dashboard.pug" />
+    <Content Include="Admin\src\pug\layouts\error.pug" />
+    <Content Include="Admin\src\pug\layouts\includes\footer.pug" />
+    <Content Include="Admin\src\pug\layouts\includes\head\css.pug" />
+    <Content Include="Admin\src\pug\layouts\includes\head\icons.pug" />
+    <Content Include="Admin\src\pug\layouts\includes\head\meta.pug" />
+    <Content Include="Admin\src\pug\layouts\includes\head\title.pug" />
+    <Content Include="Admin\src\pug\layouts\includes\navigation\sidenav.pug" />
+    <Content Include="Admin\src\pug\layouts\includes\navigation\topnav.pug" />
+    <Content Include="Admin\src\pug\layouts\includes\scripts.pug" />
+    <Content Include="Admin\src\pug\pages\401.pug" />
+    <Content Include="Admin\src\pug\pages\404.pug" />
+    <Content Include="Admin\src\pug\pages\500.pug" />
+    <Content Include="Admin\src\pug\pages\charts.pug" />
+    <Content Include="Admin\src\pug\pages\includes\datatable.pug" />
+    <Content Include="Admin\src\pug\pages\includes\page-header.pug" />
+    <Content Include="Admin\src\pug\pages\index.pug" />
+    <Content Include="Admin\src\pug\pages\layout-sidenav-light.pug" />
+    <Content Include="Admin\src\pug\pages\layout-static.pug" />
+    <Content Include="Admin\src\pug\pages\login.pug" />
+    <Content Include="Admin\src\pug\pages\password.pug" />
+    <Content Include="Admin\src\pug\pages\register.pug" />
+    <Content Include="Admin\src\pug\pages\tables.pug" />
+    <Content Include="Admin\src\scss\layout\_authentication.scss" />
+    <Content Include="Admin\src\scss\layout\_dashboard-default.scss" />
+    <Content Include="Admin\src\scss\layout\_dashboard-fixed.scss" />
+    <Content Include="Admin\src\scss\layout\_error.scss" />
+    <Content Include="Admin\src\scss\navigation\sidenav\_sidenav-dark.scss" />
+    <Content Include="Admin\src\scss\navigation\sidenav\_sidenav-light.scss" />
+    <Content Include="Admin\src\scss\navigation\sidenav\_sidenav.scss" />
+    <Content Include="Admin\src\scss\navigation\_nav.scss" />
+    <Content Include="Admin\src\scss\navigation\_topnav.scss" />
+    <Content Include="Admin\src\scss\styles.scss" />
+    <Content Include="Admin\src\scss\variables\_navigation.scss" />
+    <Content Include="Admin\src\scss\variables\_spacing.scss" />
+    <Content Include="Admin\src\scss\_global.scss" />
+    <Content Include="Admin\src\scss\_variables.scss" />
+    <None Include="packages.config" />
+    <Content Include="mio.html" />
+    <Content Include="public\apk\moneysmart.apk" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Admin\dist\401.html" />
+    <Content Include="Admin\dist\404.html" />
+    <Content Include="Admin\dist\500.html" />
+    <Content Include="Admin\dist\assets\demo\chart-area-demo.js" />
+    <Content Include="Admin\dist\assets\demo\chart-bar-demo.js" />
+    <Content Include="Admin\dist\assets\demo\chart-pie-demo.js" />
+    <Content Include="Admin\dist\assets\demo\datatables-demo.js" />
+    <Content Include="Admin\dist\assets\img\error-404-monochrome.svg" />
+    <Content Include="Admin\dist\charts.html" />
+    <Content Include="Admin\dist\css\styles.css" />
+    <Content Include="Admin\dist\index.html" />
+    <Content Include="Admin\dist\js\scripts.js" />
+    <Content Include="Admin\dist\layout-sidenav-light.html" />
+    <Content Include="Admin\dist\layout-static.html" />
+    <Content Include="Admin\dist\login.html" />
+    <Content Include="Admin\dist\password.html" />
+    <Content Include="Admin\dist\register.html" />
+    <Content Include="Admin\dist\tables.html" />
+    <Content Include="Admin\index.html" />
+    <Content Include="Admin\scripts\build-assets.js" />
+    <Content Include="Admin\scripts\build-pug.js" />
+    <Content Include="Admin\scripts\build-scripts.js" />
+    <Content Include="Admin\scripts\build-scss.js" />
+    <Content Include="Admin\scripts\clean.js" />
+    <Content Include="Admin\scripts\render-assets.js" />
+    <Content Include="Admin\scripts\render-pug.js" />
+    <Content Include="Admin\scripts\render-scripts.js" />
+    <Content Include="Admin\scripts\render-scss.js" />
+    <Content Include="Admin\scripts\sb-watch.js" />
+    <Content Include="Admin\scripts\start-debug.js" />
+    <Content Include="Admin\scripts\start.js" />
+    <Content Include="Admin\src\assets\demo\chart-area-demo.js" />
+    <Content Include="Admin\src\assets\demo\chart-bar-demo.js" />
+    <Content Include="Admin\src\assets\demo\chart-pie-demo.js" />
+    <Content Include="Admin\src\assets\demo\datatables-demo.js" />
+    <Content Include="Admin\src\assets\img\error-404-monochrome.svg" />
+    <Content Include="Admin\src\js\scripts.js" />
+    <Content Include="download.html" />
+    <Content Include="interrogaDB.asmx" />
+    <Content Include="index.html" />
+    <Content Include="moneySmartDownload.gif" />
+    <Content Include="moneySmartWait.gif" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="cCostanti.cs" />
+    <Compile Include="cCrittografia.cs" />
+    <Compile Include="cPdf.cs" />
+    <Compile Include="interrogaDB.asmx.cs">
+      <DependentUpon>interrogaDB.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>60190</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>https://localhost:44348/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
