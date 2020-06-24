@@ -206,7 +206,7 @@
     <Content Include="Admin\src\js\scripts.js" />
     <Content Include="download.html" />
     <Content Include="interrogaDB.asmx" />
-    <Content Include="index.html" />
+    <Content Include="_index.html" />
     <Content Include="moneySmartDownload.gif" />
     <Content Include="moneySmartWait.gif" />
     <Content Include="Web.config" />
