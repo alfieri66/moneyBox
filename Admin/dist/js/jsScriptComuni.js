@@ -265,3 +265,70 @@ function erroreDownloadApk() {
     attesa.style.display = "none";
 }
 
+function emailElenco(qualeElenco) {
+    var dati = new Object();
+    dati.qualeElenco = qualeElenco;
+    
+    attesa.style.display = "block";
+    $.ajax({
+        url: costanti.pathWebServices + "emailElenco",
+        type: "POST",
+        data: JSON.stringify(dati),
+        contentType: "application/json",
+        dataType: "json",
+        success: successoEmailElenco,
+        error: erroreEmailElenco
+    })
+}
+
+function successoEmailElenco(msg) {
+    var stringaJSON = msg.d;
+    var dati = new Object();
+    attesa.style.display = "none";
+    dati = JSON.parse(stringaJSON);
+    $("#messaggio").html(dati.messaggio);
+    $('#panelMessaggio').modal('show');
+
+}
+
+function erroreEmailElenco(msg) {
+    var stringaJSON = msg.d;
+    var dati = new Object();
+    attesa.style.display = "none";
+    dati = JSON.parse(stringaJSON);
+    $("#lblMessaggio").html(dati.messaggio);
+}
+
+function downloadElenco(qualeElenco) {
+    var dati = new Object();
+    dati.qualeElenco = qualeElenco;
+
+    attesa.style.display = "block";
+    $.ajax({
+        url: costanti.pathWebServices + "downloadElenco",
+        type: "POST",
+        data: JSON.stringify(dati),
+        contentType: "application/json",
+        dataType: "json",
+        success: successoDownloadElenco,
+        error: erroreDownloadElenco
+    })
+}
+
+function successoDownloadElenco(msg) {
+    var stringaJSON = msg.d;
+    var dati = new Object();
+    attesa.style.display = "none";
+    dati = JSON.parse(stringaJSON);
+    $("#messaggio").html(dati.messaggio);
+    $('#panelMessaggio').modal('show');
+
+}
+
+function erroreDownloadElenco(msg) {
+    var stringaJSON = msg.d;
+    var dati = new Object();
+    attesa.style.display = "none";
+    dati = JSON.parse(stringaJSON);
+    $("#lblMessaggio").html(dati.messaggio);
+}

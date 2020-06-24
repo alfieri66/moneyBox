@@ -19,6 +19,7 @@ using System.Security.Authentication;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Threading;
+using System.ComponentModel.DataAnnotations;
 
 namespace moneyBox
 {
@@ -1218,6 +1219,94 @@ namespace moneyBox
         public void downloadAPK()
         {
             HttpContext.Current.Response.Redirect("https://www.moneysmart.cloud/download.html");
+        }
+
+
+        [WebMethod(EnableSession = true)]
+        public string downloadElenco(string qualeElenco)
+        {
+            string stringaSql;
+            StreamWriter fElenco;
+            tRecEsito recEsito;
+            string stringaJson;
+            long codiceLocale;
+            string nome, citta, indirizzo, tel;
+            string cognome, ruolo, email;
+            WebClient downloadAgent = new WebClient();
+            string fileDownload;
+
+            recEsito.esito = false;
+            recEsito.messaggio = "";
+
+            switch (qualeElenco)
+            {
+                case "locali":
+                    {
+                        fileDownload = costanti.pathRemotoWeb + "/" + costanti.fileElencoLocali;
+                        fElenco = File.CreateText(Server.MapPath(costanti.fileElencoLocali));
+                        stringaSql = "SELECT * FROM locali";
+                        comandoSQL.CommandText = stringaSql;
+                        comandoSQL.Connection = Connessione;
+                        tabella = comandoSQL.ExecuteReader();
+                        while (tabella.Read())
+                        {
+                            codiceLocale = (long)tabella["codiceLocale"];
+                            nome = (string)tabella["nome"];
+                            citta = (string)tabella["citta"];
+                            indirizzo = (string)tabella["indirizzo"];
+                            tel = (string )tabella["tel"];
+
+                            fElenco.Write(codiceLocale.ToString() + "; ");
+                            fElenco.Write(nome + "; ");
+                            fElenco.Write(citta + "; ");
+                            fElenco.Write(indirizzo + "; ");
+                            fElenco.Write(tel );
+                        }
+                        chiudiDB();
+                        fElenco.Close();
+                        downloadAgent.DownloadFile(fileDownload, "locali.csv");
+                        recEsito.esito = true;
+                        recEsito.messaggio = "operazione completata con successo!";
+                        break;
+                    }
+                case "agenti":
+                    {
+                        fileDownload = costanti.pathRemotoWeb + "/" + costanti.fileElencoAgenti;
+                        fElenco = File.CreateText(Server.MapPath(costanti.fileElencoAgenti));
+                        stringaSql = "Select * from utenti";
+                        comandoSQL.CommandText = stringaSql;
+                        comandoSQL.Connection = Connessione;
+                        tabella = comandoSQL.ExecuteReader();
+                        while (tabella.Read())
+                        {
+                            nome = (string)tabella["nome"];
+                            cognome = (string)tabella["cognome"];
+                            ruolo = (string)tabella["ruolo"];
+                            email= (string)tabella["email"];
+                            
+                            fElenco.Write(nome + "; ");
+                            fElenco.Write(cognome + "; ");
+                            fElenco.Write(ruolo + "; ");
+                            fElenco.Write(email);
+                        }
+                        chiudiDB();
+                        fElenco.Close();
+                        downloadAgent.DownloadFile(fileDownload, "agenti.csv");
+                        recEsito.esito = true;
+                        recEsito.messaggio = "operazione completata con successo!";
+                        break;
+                    }
+                default:
+                    {
+                        recEsito.esito = false;
+                        recEsito.messaggio = "Non ci sono dati da scaricare!";
+                        break;
+                    }
+
+            }
+
+            stringaJson = JsonConvert.SerializeObject(recEsito);
+            return stringaJson;
         }
 
 
