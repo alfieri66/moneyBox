@@ -1026,10 +1026,6 @@ namespace moneyBox
             string fileTmp = Server.MapPath(costanti.pathRemoto) + "/" + fileName;
             string fileDownload = costanti.pathRemotoWeb + "/" + fileName;
             
-            //WebClient tmpWebClient = new WebClient();
-
-
-
             string riga;
             fRead=File.OpenText(fileModello);
             fWrite= File.CreateText(fileTmp);
@@ -1134,6 +1130,86 @@ namespace moneyBox
             stringaJson = JsonConvert.SerializeObject(esito);
             return stringaJson;
         }
+
+        [WebMethod(EnableSession = true)]
+        public string pdfCassaUtentePlus(string email, string dataIni, string dataFin, Single monete, Single carta, string targa)
+        {
+            string stringaJson;
+            tRecEsito esito;
+            string periodoRiferimento;
+            string nomeAgente, destinatarioMail;
+            Single totAcconto = 0, totRecupero = 0, totDaRiportare = 0;
+            string filePdf = "", infoSorgente;
+            string emailAgente = email;
+
+            cPdf documentoPdf = new cPdf();
+            cCostanti.tOperazione dettaglio = new cCostanti.tOperazione();
+            List<cCostanti.tOperazione> cassa = new List<cCostanti.tOperazione>();
+
+            esito.esito = false;
+            esito.messaggio = "-";
+            if (apriDB())
+            {
+                nomeAgente = cercaAgente(email);
+                destinatarioMail = cercaDestinatari();
+                infoSorgente = "Report: " + nomeAgente;
+                comandoSQL.Parameters.Clear();
+                comandoSQL.Parameters.AddWithValue("@dataIni", dataIni);
+                comandoSQL.Parameters.AddWithValue("@dataFin", dataFin);
+                comandoSQL.Parameters.AddWithValue("@email", email.Trim());
+                comandoSQL.CommandText = "Select locali.codiceLocale, locali.nome as nomeLocale, " +
+                                         "       incassi.data, incassi.acconto, incassi.daRiportare, incassi.recupero " +
+                                         "       from locali Inner join incassi on locali.idLocale=incassi.idLocale Inner join utenti on utenti.idUtente=incassi.idUtente " +
+                                         "       where date(incassi.data) >= @dataIni AND date(incassi.data) <= @dataFin AND incassi.idUtente IN " +
+                                         "       (Select idUtente from utenti where email = @email)";
+
+                comandoSQL.CommandText += " ORDER BY data DESC ";
+                comandoSQL.Connection = Connessione;
+                tabella = comandoSQL.ExecuteReader();
+
+                if (tabella.HasRows)
+                {
+                    while (tabella.Read() == true)
+                    {
+                        dettaglio.codiceLocale = tabella["codiceLocale"].ToString();
+                        dettaglio.nomeLocale = tabella["nomeLocale"].ToString();
+                        dettaglio.data = tabella["data"].ToString();
+                        dettaglio.acconto = (float)tabella["acconto"];
+                        dettaglio.recupero = (float)tabella["recupero"];
+                        dettaglio.daRiportare = (float)tabella["daRiportare"];
+                        totAcconto += (float)tabella["acconto"];
+                        totRecupero += (float)tabella["recupero"];
+                        totDaRiportare += (float)tabella["daRiportare"];
+                        cassa.Add(dettaglio);
+                    }
+                }
+                chiudiDB();
+                if (dataIni == dataFin)
+                {
+                    periodoRiferimento = Convert.ToDateTime(dataIni).ToString("dd-MM-yyyy");
+                }
+                else
+                {
+                    periodoRiferimento = "da " +
+                        Convert.ToDateTime(dataIni).ToString("dd-MM-yyyy") +
+                        " a " +
+                        Convert.ToDateTime(dataFin).ToString("dd-MM-yyyy");
+                }
+
+                filePdf = documentoPdf.pdfRapportoAgentePlus(nomeAgente, email, periodoRiferimento, totAcconto, totRecupero, totDaRiportare, monete, carta, targa, cassa);
+
+                inviaPdf(destinatarioMail, infoSorgente, filePdf);
+                inviaPdf(emailAgente, infoSorgente, filePdf);
+
+                esito.esito = true;
+                esito.messaggio = destinatarioMail + ", " + emailAgente + " -- " + infoSorgente + " -- " + filePdf;
+            }
+
+            stringaJson = JsonConvert.SerializeObject(esito);
+            return stringaJson;
+        }
+
+
         //elimina webMethod
         [WebMethod(EnableSession = true)]
         public string cercaDestinatari()
@@ -1199,8 +1275,8 @@ namespace moneyBox
                                         "<a href='https://www.moneysmart.cloud/download.html'>https://www.moneysmart.cloud/download.html </a><br> ";
 
                 message.From.Add(new MailboxAddress("Agente MoneyBOX", costanti.mailFrom));
-                message.To.Add(new MailboxAddress("Amministratore MoneyBox", emailDestinatari));
-                message.ReplyTo.Add(new MailboxAddress("Amministratore MoneyBox", emailDestinatari));
+                message.To.Add(new MailboxAddress("MoneyBox", emailDestinatari));
+                message.ReplyTo.Add(new MailboxAddress("MoneyBox", emailDestinatari));
                 message.Subject = infoSorgente;
                 message.Body = bodyBuilder.ToMessageBody();
                 client.Send(message);
@@ -1245,21 +1321,26 @@ namespace moneyBox
                     case "locali":
                         fileDownload = costanti.pathRemotoWeb + "/" + costanti.fileElencoLocali;
                         fElenco = File.CreateText(Server.MapPath("/public/" + costanti.fileElencoLocali));
-                        stringaSql = "SELECT * FROM locali";
+                        fElenco.Write("codice locale; ");
+                        fElenco.Write("città; ");
+                        fElenco.Write("nome locale; ");
+                        fElenco.Write("indirizzo; ");
+                        fElenco.WriteLine("telefono");
+                        stringaSql = "SELECT * FROM locali order by citta, nome";
                         comandoSQL.CommandText = stringaSql;
                         comandoSQL.Connection = Connessione;
                         tabella = comandoSQL.ExecuteReader();
                         while (tabella.Read())
                         {
                             codiceLocale = (long)tabella["codiceLocale"];
-                            nome = (string)tabella["nome"];
                             citta = (string)tabella["citta"];
+                            nome = (string)tabella["nome"];
                             indirizzo = (string)tabella["indirizzo"];
                             tel = (string)tabella["tel"];
 
                             fElenco.Write(codiceLocale.ToString() + "; ");
-                            fElenco.Write(nome + "; ");
                             fElenco.Write(citta + "; ");
+                            fElenco.Write(nome + "; ");
                             fElenco.Write(indirizzo + "; ");
                             fElenco.WriteLine(tel);
                         }
@@ -1268,24 +1349,30 @@ namespace moneyBox
                         
                         downloadAgent.DownloadDataAsync(new Uri(fileDownload), "locali.csv");
                         recEsito.esito = true;
-                        recEsito.messaggio = "operazione completata con successo!";
+                        recEsito.messaggio = costanti.fileElencoLocali;
                         break;
+
                     case "agenti":
                         fileDownload = costanti.pathRemotoWeb + "/" + costanti.fileElencoAgenti;
-                        fElenco = File.CreateText(Server.MapPath(costanti.fileElencoAgenti));
-                        stringaSql = "Select * from utenti";
+                        fElenco = File.CreateText(Server.MapPath("/public/"+costanti.fileElencoAgenti));
+                        fElenco.Write("cognome; ");
+                        fElenco.Write("nome; ");
+                        fElenco.Write("ruolo; ");
+                        fElenco.WriteLine("e-mail");
+
+                        stringaSql = "Select * from utenti order by ruolo, cognome, nome";
                         comandoSQL.CommandText = stringaSql;
                         comandoSQL.Connection = Connessione;
                         tabella = comandoSQL.ExecuteReader();
                         while (tabella.Read())
                         {
-                            nome = (string)tabella["nome"];
                             cognome = (string)tabella["cognome"];
+                            nome = (string)tabella["nome"];
                             ruolo = (string)tabella["ruolo"];
                             email = (string)tabella["email"];
 
-                            fElenco.Write(nome + "; ");
                             fElenco.Write(cognome + "; ");
+                            fElenco.Write(nome + "; ");
                             fElenco.Write(ruolo + "; ");
                             fElenco.WriteLine(email);
                         }
@@ -1293,8 +1380,9 @@ namespace moneyBox
                         fElenco.Close();
                         downloadAgent.DownloadDataAsync(new Uri(fileDownload), "agenti.csv");
                         recEsito.esito = true;
-                        recEsito.messaggio = "operazione completata con successo!";
+                        recEsito.messaggio = costanti.fileElencoAgenti;
                         break;
+
                     default:
                         recEsito.esito = false;
                         recEsito.messaggio = "Non ci sono dati da scaricare!";
@@ -1307,6 +1395,8 @@ namespace moneyBox
         }
 
 
+        //elimina webMethod
+        [WebMethod(EnableSession = true)]
         public string emailElenco(string qualeElenco)
         {
             string stringaSql;

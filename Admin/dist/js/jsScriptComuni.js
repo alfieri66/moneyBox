@@ -320,9 +320,16 @@ function successoDownloadElenco(msg) {
     var dati = new Object();
     attesa.style.display = "none";
     dati = JSON.parse(stringaJSON);
-    $("#messaggio").html(dati.messaggio);
-    $('#panelMessaggio').modal('show');
-
+    if (dati.esito == true) {
+        $.get("/public/" + dati.messaggio, function (data) {
+            download(data, dati.messaggio, "text/plain");
+        }, 'text');
+    }
+    else {
+        $("#messaggio").html(dati.messaggio);
+        $('#panelMessaggio').modal('show');
+    }
+    
 }
 
 function erroreDownloadElenco(msg) {
