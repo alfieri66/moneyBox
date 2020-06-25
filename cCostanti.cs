@@ -46,8 +46,8 @@ namespace moneyBox
 
         public string stringaConnessione { get; set; }
         public string fileCassa { get; set; } = "/public/cassa.csv";
-        public string fileElencoLocali { get; set; } = "/public/elencoLocali.csv";
-        public string fileElencoAgenti { get; set; } = "/public/elencoAgenti.csv";
+        public string fileElencoLocali { get; set; } = "elencoLocali.csv";
+        public string fileElencoAgenti { get; set; } = "elencoAgenti.csv";
         public string clientHost { get; set; } = "smtps.aruba.it";
         public int clientPort { get; set; } = 465;
         public Boolean clientEnableSsl { get; set; } = true;

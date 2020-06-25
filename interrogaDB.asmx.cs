@@ -563,7 +563,7 @@ namespace moneyBox
             recEsito.esito = false;
             recEsito.messaggio = "";
 
-            if (cassa.Count > 0)
+            if (cassa.Count > 0 && nullaOsta())
             {
                 try
                 {
@@ -1236,14 +1236,15 @@ namespace moneyBox
             string fileDownload;
 
             recEsito.esito = false;
-            recEsito.messaggio = "";
+            recEsito.messaggio = "Impossibile accedere ai dati!";
 
-            switch (qualeElenco)
+            if (apriDB())
             {
-                case "locali":
-                    {
+                switch (qualeElenco)
+                {
+                    case "locali":
                         fileDownload = costanti.pathRemotoWeb + "/" + costanti.fileElencoLocali;
-                        fElenco = File.CreateText(Server.MapPath(costanti.fileElencoLocali));
+                        fElenco = File.CreateText(Server.MapPath("/public/" + costanti.fileElencoLocali));
                         stringaSql = "SELECT * FROM locali";
                         comandoSQL.CommandText = stringaSql;
                         comandoSQL.Connection = Connessione;
@@ -1254,23 +1255,22 @@ namespace moneyBox
                             nome = (string)tabella["nome"];
                             citta = (string)tabella["citta"];
                             indirizzo = (string)tabella["indirizzo"];
-                            tel = (string )tabella["tel"];
+                            tel = (string)tabella["tel"];
 
                             fElenco.Write(codiceLocale.ToString() + "; ");
                             fElenco.Write(nome + "; ");
                             fElenco.Write(citta + "; ");
                             fElenco.Write(indirizzo + "; ");
-                            fElenco.Write(tel );
+                            fElenco.WriteLine(tel);
                         }
                         chiudiDB();
                         fElenco.Close();
-                        downloadAgent.DownloadFile(fileDownload, "locali.csv");
+                        
+                        downloadAgent.DownloadDataAsync(new Uri(fileDownload), "locali.csv");
                         recEsito.esito = true;
                         recEsito.messaggio = "operazione completata con successo!";
                         break;
-                    }
-                case "agenti":
-                    {
+                    case "agenti":
                         fileDownload = costanti.pathRemotoWeb + "/" + costanti.fileElencoAgenti;
                         fElenco = File.CreateText(Server.MapPath(costanti.fileElencoAgenti));
                         stringaSql = "Select * from utenti";
@@ -1282,33 +1282,148 @@ namespace moneyBox
                             nome = (string)tabella["nome"];
                             cognome = (string)tabella["cognome"];
                             ruolo = (string)tabella["ruolo"];
-                            email= (string)tabella["email"];
-                            
+                            email = (string)tabella["email"];
+
                             fElenco.Write(nome + "; ");
                             fElenco.Write(cognome + "; ");
                             fElenco.Write(ruolo + "; ");
-                            fElenco.Write(email);
+                            fElenco.WriteLine(email);
                         }
                         chiudiDB();
                         fElenco.Close();
-                        downloadAgent.DownloadFile(fileDownload, "agenti.csv");
+                        downloadAgent.DownloadDataAsync(new Uri(fileDownload), "agenti.csv");
                         recEsito.esito = true;
                         recEsito.messaggio = "operazione completata con successo!";
                         break;
-                    }
-                default:
-                    {
+                    default:
                         recEsito.esito = false;
                         recEsito.messaggio = "Non ci sono dati da scaricare!";
                         break;
-                    }
+                }
 
             }
+            stringaJson = JsonConvert.SerializeObject(recEsito);
+            return stringaJson;
+        }
+
+
+        public string emailElenco(string qualeElenco)
+        {
+            string stringaSql;
+            StreamWriter fElenco;
+            tRecEsito recEsito;
+            string stringaJson;
+            long codiceLocale;
+            string nome, citta, indirizzo, tel;
+            string cognome, ruolo, email;
+            string fileDownload;
+            string oggettoEmail = "", testoHtml = "";
+
+            var client = new SmtpClient();
+            var message = new MimeMessage();
+            var bodyBuilder = new BodyBuilder();
+
+            recEsito.esito = false;
+            recEsito.messaggio = "Impossibile accedere ai dati!";
+
+            if (apriDB() && nullaOsta())
+            {
+                switch (qualeElenco)
+                {
+                    case "locali":
+                        testoHtml = "L'elenco dei locali è in allegato <br>";
+                        oggettoEmail = "MONEY BOX, elenco dei locali registrati " + DateTime.Now.Date.ToString("dd/MM/yyyy");
+                        fileDownload = costanti.pathRemotoWeb + "/" + costanti.fileElencoLocali;
+                        fElenco = File.CreateText(Server.MapPath("/public/" + costanti.fileElencoLocali));
+                        stringaSql = "SELECT * FROM locali";
+                        comandoSQL.CommandText = stringaSql;
+                        comandoSQL.Connection = Connessione;
+                        tabella = comandoSQL.ExecuteReader();
+                        while (tabella.Read())
+                        {
+                            codiceLocale = (long)tabella["codiceLocale"];
+                            nome = (string)tabella["nome"];
+                            citta = (string)tabella["citta"];
+                            indirizzo = (string)tabella["indirizzo"];
+                            tel = (string)tabella["tel"];
+
+                            fElenco.Write(codiceLocale.ToString() + "; ");
+                            fElenco.Write(nome + "; ");
+                            fElenco.Write(citta + "; ");
+                            fElenco.Write(indirizzo + "; ");
+                            fElenco.WriteLine(tel);
+                        }
+                        chiudiDB();
+                        fElenco.Close();
+                        break;
+                    case "agenti":
+                        testoHtml = "L'elenco degli agenti è in allegato <br>";
+                        oggettoEmail = "MONEY BOX, elenco degli agenti registrati " + DateTime.Now.Date.ToString("dd/MM/yyyy");
+                        fileDownload = costanti.pathRemotoWeb + "/" + costanti.fileElencoAgenti;
+                        fElenco = File.CreateText(Server.MapPath(costanti.fileElencoAgenti));
+                        stringaSql = "Select * from utenti";
+                        comandoSQL.CommandText = stringaSql;
+                        comandoSQL.Connection = Connessione;
+                        tabella = comandoSQL.ExecuteReader();
+                        while (tabella.Read())
+                        {
+                            nome = (string)tabella["nome"];
+                            cognome = (string)tabella["cognome"];
+                            ruolo = (string)tabella["ruolo"];
+                            email = (string)tabella["email"];
+
+                            fElenco.Write(nome + "; ");
+                            fElenco.Write(cognome + "; ");
+                            fElenco.Write(ruolo + "; ");
+                            fElenco.WriteLine(email);
+                        }
+                        chiudiDB();
+                        fElenco.Close();
+                        break;
+                }
+            }
+
+            recEsito.esito = false;
+            recEsito.messaggio = "";
+
+            try
+                { 
+                client.SslProtocols = SslProtocols.Ssl3 | SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12;
+                client.Connect(costanti.clientHost, 465, true);
+                client.Authenticate(costanti.mailFrom, costanti.mailPassord);
+                bodyBuilder.Attachments.Add(Server.MapPath(costanti.fileCassa));
+                bodyBuilder.HtmlBody = aggiungiPiePaginaMail(testoHtml);
+
+                message.From.Add(new MailboxAddress("Money Box", costanti.mailFrom));
+                message.To.Add(new MailboxAddress((string)Session["email"], (string)Session["email"]));
+                message.ReplyTo.Add(new MailboxAddress((string)Session["email"], (string)Session["email"]));
+                message.Subject = oggettoEmail;
+                message.Body = bodyBuilder.ToMessageBody();
+
+                client.Send(message);
+                client.Disconnect(true);
+                client.Dispose();
+                recEsito.esito = true;
+                recEsito.messaggio = "Messaggio inviato, controlla l'email";
+                }
+            catch (System.IO.IOException e)
+                {
+                    recEsito.esito = false;
+                    recEsito.messaggio = "Errore!";
+                }
 
             stringaJson = JsonConvert.SerializeObject(recEsito);
             return stringaJson;
         }
 
+        string aggiungiPiePaginaMail(string testoHtml)
+            {
+            string testoPiePagina= testoHtml +
+                                   "<br> <br> <br> <br> <br> " +
+                                   "per scaricare l'ultima versione dell'APP Android MONEY SMART, fai clic sul seguente link:  <br>" +
+                                   "<a href='https://www.moneysmart.cloud/download.html'>https://www.moneysmart.cloud/download.html </a><br> ";
+            return testoPiePagina;
+            }
 
 
         //elimina webMethod
