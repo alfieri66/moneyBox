@@ -1,9 +1,8 @@
-codice locale; citta; nome; indirizzo; telefono
-576262; Cerignola; Bar Roma; VIa don Minzoni; 0885424242
-600600601; lucera; testa mario; Via Spillo; 000-324723
-300300301; manfredonia; happy days; Via Palermo 22; 0883-310310
-200200201; motta monte corvino; fantasy; Via Bologna 88; 0882-210210
-400400401; san giovanni rotondo; sadok; Via Napoli 11; 0884-410410
-675507; Torino; L'albero dei fichi; Via Volvera; 011-232425
-500500501; trinitapoli; piazzetta; Via Torino 33; 0885-510510
-100100101; zapponeta; foggia club; Via Roma 44; 0881-101010
+100100101; foggia club; zapponeta; Via Roma 44; 0881-101010
+200200201; fantasy; motta monte corvino; Via Bologna 88; 0882-210210
+300300301; happy days; manfredonia; Via Palermo 22; 0883-310310
+400400401; sadok; san giovanni rotondo; Via Napoli 11; 0884-410410
+500500501; piazzetta; trinitapoli; Via Torino 33; 0885-510510
+600600601; testa mario; lucera; Via Spillo; 000-324723
+675507; L'albero dei fichi; Torino; Via Volvera; 011-232425
+576262; Bar Roma; Cerignola; VIa don Minzoni; 0885424242

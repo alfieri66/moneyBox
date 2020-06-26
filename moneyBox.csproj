@@ -108,6 +108,7 @@
     <Content Include="Admin\.gitignore" />
     <Content Include="Admin\.travis.yml" />
     <Content Include="Admin\dist\css\myStyles.css" />
+    <Content Include="Admin\dist\js\download.js" />
     <Content Include="Admin\dist\js\jsCassa.js" />
     <Content Include="Admin\dist\js\jsUtenti.js" />
     <Content Include="Admin\dist\js\jsLocali.js" />

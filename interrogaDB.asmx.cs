@@ -394,10 +394,12 @@ namespace moneyBox
                     {
                         Session["loginAdmin"] = "OK";
                         tabella.Close();
+                        /*
                         comandoSQL.CommandText = "update utenti set ricevePdf=false";
                         comandoSQL.ExecuteNonQuery();
                         comandoSQL.CommandText = "update utenti set ricevePdf=true where email=@email and ruolo='admin'";
                         comandoSQL.ExecuteNonQuery();
+                        */
                     }
                     else
                     {
@@ -608,10 +610,7 @@ namespace moneyBox
                     client.Connect(costanti.clientHost, 465, true);
                     client.Authenticate(costanti.mailFrom, costanti.mailPassord);
                     bodyBuilder.Attachments.Add(Server.MapPath(costanti.fileCassa));
-                    bodyBuilder.HtmlBody = "il dettaglio in allegato" +
-                                            "<br> <br> <br> <br> <br> " + 
-                                            "per scaricare l'ultima versione dell'APP Android MONEY SMART, fai clic sul seguente link:  <br>" +
-                                            "<a href='https://www.moneysmart.cloud/download.html'>https://www.moneysmart.cloud/download.html </a><br> ";
+                    bodyBuilder.HtmlBody = aggiungiPiePaginaMail("il dettaglio in allegato <br>");
 
                     message.From.Add(new MailboxAddress("Money Box", costanti.mailFrom));
                     message.To.Add(new MailboxAddress((string)Session["email"], (string)Session["email"]));
@@ -1269,11 +1268,8 @@ namespace moneyBox
                 client.Connect(costanti.clientHost, 465, true);
                 client.Authenticate(costanti.mailFrom, costanti.mailPassord);
                 bodyBuilder.Attachments.Add(Server.MapPath(costanti.pathRemoto + "/" + nomeAllegato));
-                bodyBuilder.HtmlBody = "il dettaglio in allegato" +
-                                        "<br> <br> <br> <br> <br> " +
-                                        "per scaricare l'ultima versione dell'APP Android MONEY SMART, fai clic sul seguente link:  <br>" +
-                                        "<a href='https://www.moneysmart.cloud/download.html'>https://www.moneysmart.cloud/download.html </a><br> ";
-
+                bodyBuilder.HtmlBody =aggiungiPiePaginaMail("il dettaglio in allegato <br>");
+                
                 message.From.Add(new MailboxAddress("Agente MoneyBOX", costanti.mailFrom));
                 message.To.Add(new MailboxAddress("MoneyBox", emailDestinatari));
                 message.ReplyTo.Add(new MailboxAddress("MoneyBox", emailDestinatari));
@@ -1322,7 +1318,7 @@ namespace moneyBox
                         fileDownload = costanti.pathRemotoWeb + "/" + costanti.fileElencoLocali;
                         fElenco = File.CreateText(Server.MapPath("/public/" + costanti.fileElencoLocali));
                         fElenco.Write("codice locale; ");
-                        fElenco.Write("città; ");
+                        fElenco.Write("citta'; ");
                         fElenco.Write("nome locale; ");
                         fElenco.Write("indirizzo; ");
                         fElenco.WriteLine("telefono");
@@ -1406,7 +1402,7 @@ namespace moneyBox
             long codiceLocale;
             string nome, citta, indirizzo, tel;
             string cognome, ruolo, email;
-            string fileDownload;
+            string fileAttach="";
             string oggettoEmail = "", testoHtml = "";
 
             var client = new SmtpClient();
@@ -1423,47 +1419,59 @@ namespace moneyBox
                     case "locali":
                         testoHtml = "L'elenco dei locali è in allegato <br>";
                         oggettoEmail = "MONEY BOX, elenco dei locali registrati " + DateTime.Now.Date.ToString("dd/MM/yyyy");
-                        fileDownload = costanti.pathRemotoWeb + "/" + costanti.fileElencoLocali;
-                        fElenco = File.CreateText(Server.MapPath("/public/" + costanti.fileElencoLocali));
-                        stringaSql = "SELECT * FROM locali";
+                        fileAttach = Server.MapPath("/public/" + costanti.fileElencoLocali);
+                        fElenco = File.CreateText(fileAttach);
+
+                        fElenco.Write("codice locale; ");
+                        fElenco.Write("citta'; ");
+                        fElenco.Write("nome locale; ");
+                        fElenco.Write("indirizzo; ");
+                        fElenco.WriteLine("telefono");
+                        stringaSql = "SELECT * FROM locali order by citta, nome";
                         comandoSQL.CommandText = stringaSql;
                         comandoSQL.Connection = Connessione;
                         tabella = comandoSQL.ExecuteReader();
                         while (tabella.Read())
                         {
                             codiceLocale = (long)tabella["codiceLocale"];
-                            nome = (string)tabella["nome"];
                             citta = (string)tabella["citta"];
+                            nome = (string)tabella["nome"];
                             indirizzo = (string)tabella["indirizzo"];
                             tel = (string)tabella["tel"];
 
                             fElenco.Write(codiceLocale.ToString() + "; ");
-                            fElenco.Write(nome + "; ");
                             fElenco.Write(citta + "; ");
+                            fElenco.Write(nome + "; ");
                             fElenco.Write(indirizzo + "; ");
                             fElenco.WriteLine(tel);
                         }
                         chiudiDB();
                         fElenco.Close();
                         break;
+
                     case "agenti":
                         testoHtml = "L'elenco degli agenti è in allegato <br>";
                         oggettoEmail = "MONEY BOX, elenco degli agenti registrati " + DateTime.Now.Date.ToString("dd/MM/yyyy");
-                        fileDownload = costanti.pathRemotoWeb + "/" + costanti.fileElencoAgenti;
-                        fElenco = File.CreateText(Server.MapPath(costanti.fileElencoAgenti));
-                        stringaSql = "Select * from utenti";
+                        fileAttach=Server.MapPath("/public/" + costanti.fileElencoAgenti);
+                        fElenco = File.CreateText(fileAttach);
+
+                        fElenco.Write("cognome; ");
+                        fElenco.Write("nome; ");
+                        fElenco.Write("ruolo; ");
+                        fElenco.WriteLine("e-mail");
+                        stringaSql = "Select * from utenti order by ruolo, cognome, nome";
                         comandoSQL.CommandText = stringaSql;
                         comandoSQL.Connection = Connessione;
                         tabella = comandoSQL.ExecuteReader();
                         while (tabella.Read())
                         {
-                            nome = (string)tabella["nome"];
                             cognome = (string)tabella["cognome"];
+                            nome = (string)tabella["nome"];
                             ruolo = (string)tabella["ruolo"];
                             email = (string)tabella["email"];
 
-                            fElenco.Write(nome + "; ");
                             fElenco.Write(cognome + "; ");
+                            fElenco.Write(nome + "; ");
                             fElenco.Write(ruolo + "; ");
                             fElenco.WriteLine(email);
                         }
@@ -1478,10 +1486,7 @@ namespace moneyBox
 
             try
                 { 
-                client.SslProtocols = SslProtocols.Ssl3 | SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12;
-                client.Connect(costanti.clientHost, 465, true);
-                client.Authenticate(costanti.mailFrom, costanti.mailPassord);
-                bodyBuilder.Attachments.Add(Server.MapPath(costanti.fileCassa));
+                bodyBuilder.Attachments.Add(fileAttach);
                 bodyBuilder.HtmlBody = aggiungiPiePaginaMail(testoHtml);
 
                 message.From.Add(new MailboxAddress("Money Box", costanti.mailFrom));
@@ -1490,6 +1495,9 @@ namespace moneyBox
                 message.Subject = oggettoEmail;
                 message.Body = bodyBuilder.ToMessageBody();
 
+                client.SslProtocols = SslProtocols.Ssl3 | SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12;
+                client.Connect(costanti.clientHost, 465, true);
+                client.Authenticate(costanti.mailFrom, costanti.mailPassord);
                 client.Send(message);
                 client.Disconnect(true);
                 client.Dispose();

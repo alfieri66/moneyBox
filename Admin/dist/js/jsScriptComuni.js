@@ -11,7 +11,7 @@ $(document).ready(function () {
     //costanti.pathWebServices = "https://localhost:44348/interrogaDB.asmx/";
     //costanti.pathWebServices = "https://www.dolcemare.eu/interrogaDB.asmx/";
 
-    var livelloEsecuzione = 'L';
+    var livelloEsecuzione = 'T';
     switch (livelloEsecuzione) {
         case 'L':
             costanti.pathWebServices = "https://localhost:44348/interrogaDB.asmx/";;
