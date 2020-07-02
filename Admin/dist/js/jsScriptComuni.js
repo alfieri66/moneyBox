@@ -11,7 +11,7 @@ $(document).ready(function () {
     //costanti.pathWebServices = "https://localhost:44348/interrogaDB.asmx/";
     //costanti.pathWebServices = "https://www.dolcemare.eu/interrogaDB.asmx/";
 
-    var livelloEsecuzione = 'T';
+    var livelloEsecuzione = 'L';
     switch (livelloEsecuzione) {
         case 'L':
             costanti.pathWebServices = "https://localhost:44348/interrogaDB.asmx/";;
@@ -37,8 +37,6 @@ $(document).ready(function () {
     $("#pagUtenti").hide();
     $("#pagLocali").hide();
     $("#cambiaPassword").modal('hide');
-
-
 });
 
 function attivaArea(item)
@@ -61,7 +59,6 @@ function attivaArea(item)
         $("#pagUtenti").hide();
         $("#pagLocali").show(500);
     }
-
 }
 function logout() {
     $.ajax({

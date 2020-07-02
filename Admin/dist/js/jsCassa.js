@@ -71,7 +71,7 @@ function successoLeggiDettagliCassa(msg) {
     popolaTabellaCassa(infoCassa, dati.totAcconto, dati.totRecupero, dati.totDaRiportare);
 }
 
-function erroreLeggiDettagliCassa() {
+function erroreLeggiDettagliCassa(msg) {
     attesa.style.display = "none";
 }
 
