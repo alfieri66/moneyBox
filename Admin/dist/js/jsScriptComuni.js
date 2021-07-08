@@ -33,9 +33,12 @@ $(document).ready(function () {
 
     $("#startDate").val(tmpDataIniziale);
     $("#endDate").val(tmpDataOdierna);
+    $("#dataAnalisi").val(tmpDataOdierna);
+
     $("#pagCassa").show(500);
     $("#pagUtenti").hide();
     $("#pagLocali").hide();
+    $("#pagAnalisi").hide();
     $("#cambiaPassword").modal('hide');
 });
 
@@ -43,22 +46,34 @@ function attivaArea(item)
 {
     if (item == 'cassa')
     {
-        $("#pagCassa").show(500);
         $("#pagUtenti").hide();
         $("#pagLocali").hide();
+        $("#pagAnalisi").hide();
+        $("#pagCassa").show(500);
     }
 
     if (item == 'utenti') {
         $("#pagCassa").hide();
-        $("#pagUtenti").show(500);
         $("#pagLocali").hide();
+        $("#pagAnalisi").hide();
+        $("#pagUtenti").show(500);
     }
 
     if (item == 'locali') {
         $("#pagCassa").hide();
         $("#pagUtenti").hide();
+        $("#pagAnalisi").hide();
         $("#pagLocali").show(500);
     }
+
+    if (item == 'analisi') {
+        $("#pagCassa").hide();
+        $("#pagUtenti").hide();
+        $("#pagLocali").hide();
+        $("#pagAnalisi").show(500);
+    }
+
+
 }
 function logout() {
     $.ajax({

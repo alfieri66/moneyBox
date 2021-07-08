@@ -62,6 +62,7 @@ namespace moneyBox
             public string nome;
             public string cognome;
             public string email;
+            public Boolean funzioniPlus;
             public string password;
             public string ripetiPassword;
         }
@@ -78,6 +79,39 @@ namespace moneyBox
             public string daRiportare;
         }
 
+
+        public struct tIncassoTotaleAgenti
+        {
+            public string stato;
+            public string idAgente;
+            public string nomeUtente;
+            public string acconto;
+            public string recupero;
+            public string daRiportare;
+        }
+
+        public struct tIncassoDettagliatoAgente
+        {
+            public string stato;
+            public string idAgente;
+            public string idLocale;
+            public string nomeUtente;
+            public string nomeLocale;
+            public string cittaLocale;
+            public string oraIncasso;
+            public string acconto;
+            public string recupero;
+            public string daRiportare;
+        }
+
+        struct tInfoAgenti
+        {
+            public string totAcconto;
+            public string totDaRiportare;
+            public string totRecupero;
+            public string dettaglio;
+            public string totali;
+        }
 
         struct tCassa
         {
@@ -500,6 +534,10 @@ namespace moneyBox
                     comandoSQL.Parameters.AddWithValue("@dataFin", dataFin);
                 }
 
+                if (Condizione.Length > 0)
+                    Condizione += " AND ";
+                Condizione += "NOT (incassi.acconto=0 AND incassi.recupero=0 AND incassi.daRiportare=0) ";
+
                 comandoSQL.CommandText = "Select utenti.idUtente, utenti.cognome, utenti.nome, " +
                                          "locali.idLocale, locali.nome as nomeLocale, incassi.idIncasso, incassi.data, incassi.acconto, incassi.recupero, incassi.daRiportare " +
                                          "from incassi inner JOIN utenti on incassi.idUtente = utenti.idUtente INNER Join locali on incassi.idLocale = locali.idLocale ";
@@ -546,6 +584,131 @@ namespace moneyBox
             stringaJson = JsonConvert.SerializeObject(cassa);
             return stringaJson;
         }
+
+        [WebMethod(EnableSession = true)]
+
+        public string leggiAgentiPerAnalisi(string dataIncasso)
+        {
+            tIncassoTotaleAgenti agente = new tIncassoTotaleAgenti();
+            List<tIncassoTotaleAgenti> agenti = new List<tIncassoTotaleAgenti>();
+            string stringaJson = "";
+            if (apriDB() && nullaOsta())
+            {
+                comandoSQL.CommandText = "SELECT utenti.idUtente, utenti.cognome,utenti.nome, Sum(incassi.acconto) as totAcconto, sum(incassi.daRiportare) as totDaRiportare, Sum(incassi.recupero) as totRecupero " +
+                                         "from incassi inner join utenti on incassi.idUtente=utenti.idUtente " +
+                                         "where date(incassi.data) = @dataIncasso " +
+                                         "group by utenti.Nome,utenti.Cognome " +
+                                         "order by utenti.cognome,utenti.nome ";
+                comandoSQL.Parameters.AddWithValue("@dataIncasso", dataIncasso);
+
+                comandoSQL.Connection = Connessione;
+                tabella = comandoSQL.ExecuteReader();
+                if (tabella.HasRows)
+                {
+                    while (tabella.Read() == true)
+                    {
+                        agente.stato = "X";
+                        agente.idAgente = ((Int32) tabella["idUtente"]).ToString();
+                        agente.nomeUtente = (string) tabella["cognome"] + " " + tabella["nome"];
+                        agente.acconto = String.Format("{0:0,0.00}", (double)tabella["totAcconto"]);
+                        agente.daRiportare = String.Format("{0:0,0.00}", (double)tabella["totDaRiportare"]);
+                        agente.recupero = String.Format("{0:0,0.00}", (double)tabella["totRecupero"]);
+                        agenti.Add(agente);
+                    }
+                }
+                chiudiDB();
+                stringaJson = JsonConvert.SerializeObject(agenti);
+            }
+            return stringaJson;
+        }
+
+
+        [WebMethod(EnableSession = true)]
+        public string leggiAgentiPerAnalisiTmp(string dataIncasso)
+        {
+            MySqlDataReader tabellaDettagli;
+            tInfoAgenti infoAgenti = new tInfoAgenti();
+
+            tIncassoTotaleAgenti agente = new tIncassoTotaleAgenti();
+            List<tIncassoTotaleAgenti> agenti = new List<tIncassoTotaleAgenti>();
+
+            tIncassoDettagliatoAgente dettaglioAgente = new tIncassoDettagliatoAgente();
+            List<tIncassoDettagliatoAgente> dettaglioAgenti = new List<tIncassoDettagliatoAgente>();
+
+            double totAcconto=0;
+            double totRecupero=0;
+            double totDaRiportare=0;
+
+            string stringaJson = "";
+            if (apriDB() && nullaOsta())
+            {
+                comandoSQL.Parameters.Clear();
+                comandoSQL.CommandText = "SELECT utenti.idUtente, utenti.cognome,utenti.nome, Sum(incassi.acconto) as totAcconto, sum(incassi.daRiportare) as totDaRiportare, Sum(incassi.recupero) as totRecupero " +
+                                         "from incassi inner join utenti on incassi.idUtente=utenti.idUtente " +
+                                         "where date(incassi.data) = @dataIncasso " +
+                                         "group by utenti.Nome,utenti.Cognome " +
+                                         "order by utenti.cognome,utenti.nome ";
+                comandoSQL.Parameters.AddWithValue("@dataIncasso", dataIncasso);
+
+                comandoSQL.Connection = Connessione;
+                tabella = comandoSQL.ExecuteReader();
+                if (tabella.HasRows)
+                {
+                    while (tabella.Read() == true)
+                    {
+                        agente.stato = "X";
+                        agente.idAgente = ((Int32)tabella["idUtente"]).ToString();
+                        agente.nomeUtente = (string)tabella["cognome"] + " " + tabella["nome"];
+                        agente.acconto = String.Format("{0:0,0.00}", (double)tabella["totAcconto"]);
+                        agente.daRiportare = String.Format("{0:0,0.00}", (double)tabella["totDaRiportare"]);
+                        agente.recupero = String.Format("{0:0,0.00}", (double)tabella["totRecupero"]);
+                        agenti.Add(agente);
+                    }
+                }
+                comandoSQL.Dispose();
+                comandoSQL = new MySqlCommand(); 
+                comandoSQL.CommandText = "SELECT time(incassi.data) as oraIncasso, utenti.idUtente, utenti.cognome,utenti.nome, locali.nome as nomeLocale, locali.citta as cittaLocale,  incassi.acconto, incassi.recupero, incassi.daRiportare " +
+                                         "from incassi inner join utenti on incassi.idUtente = utenti.idUtente " +
+                                         "INNER join locali on locali.idLocale = incassi.idLocale " +
+                                         "where date(incassi.data) = @dataIncasso " +
+                                         "order by utenti.cognome,utenti.nome, incassi.data ";
+                
+                comandoSQL.Parameters.AddWithValue("@dataIncasso", dataIncasso);
+                comandoSQL.Connection = Connessione;
+                tabellaDettagli = comandoSQL.ExecuteReader();
+                if (tabellaDettagli.HasRows)
+                {
+                    while (tabellaDettagli.Read() == true)
+                    {
+                        dettaglioAgente.idAgente = ((Int32)tabellaDettagli["idUtente"]).ToString();
+                        dettaglioAgente.oraIncasso = (tabellaDettagli["oraIncasso"]).ToString();
+                        dettaglioAgente.nomeUtente = (string)tabellaDettagli["cognome"] + " " + tabellaDettagli["nome"];
+                        dettaglioAgente.nomeLocale = (string)tabellaDettagli["nomeLocale"];
+                        dettaglioAgente.cittaLocale = (string)tabellaDettagli["cittaLocale"];
+                        dettaglioAgente.acconto = String.Format("{0:0,0.00}", (float)tabellaDettagli["acconto"]);
+                        dettaglioAgente.daRiportare = String.Format("{0:0,0.00}", (float)tabellaDettagli["daRiportare"]);
+                        dettaglioAgente.recupero = String.Format("{0:0,0.00}", tabellaDettagli["recupero"]);
+                        dettaglioAgenti.Add(dettaglioAgente);
+                        totAcconto += (float)tabellaDettagli["acconto"];
+                        totDaRiportare += (float)tabellaDettagli["daRiportare"];
+                        totRecupero += (float)tabellaDettagli["recupero"];
+                    }
+                }
+
+                infoAgenti.totali = JsonConvert.SerializeObject(agenti);
+                infoAgenti.dettaglio = JsonConvert.SerializeObject(dettaglioAgenti);
+                infoAgenti.totAcconto= String.Format("{0:0,0.00}", totAcconto);
+                infoAgenti.totDaRiportare = String.Format("{0:0,0.00}", totDaRiportare);
+                infoAgenti.totRecupero = String.Format("{0:0,0.00}", totRecupero);
+
+                chiudiDB();
+                stringaJson = JsonConvert.SerializeObject(infoAgenti);
+            }
+            return stringaJson;
+        }
+
+
+
 
         [WebMethod(EnableSession = true)]
         public string inviaMail(List<tDettaglioCassa> cassa, string dataIni, string dataFin, string utente, string locale)
@@ -709,6 +872,7 @@ namespace moneyBox
                         utente.nome = (string)tabella["nome"];
                         utente.cognome = (string)tabella["cognome"];
                         utente.email = (string)tabella["email"];
+                        utente.funzioniPlus= (Boolean)tabella["plus"];
                         utente.password = "";
                         utenti.Add(utente);
                     }
@@ -853,10 +1017,11 @@ namespace moneyBox
                         {
                             if (recLocale.password == recLocale.ripetiPassword && mailCorretta(recLocale.email)  && recLocale.ripetiPassword.Trim().Length>0)
                             {
-                                stringaSql = "insert into utenti(ruolo, nome , cognome, email, md5Password, md5PasswordSmart) Values ('user', @nome , @cognome, @email, @md5Password, '')";
+                                stringaSql = "insert into utenti(ruolo, nome , cognome, email, plus, md5Password, md5PasswordSmart) Values ('user', @nome , @cognome, @email, @plus, @md5Password, '')";
                                 comandoSQL.Parameters.AddWithValue("@nome", recLocale.nome);
                                 comandoSQL.Parameters.AddWithValue("@cognome", recLocale.cognome);
                                 comandoSQL.Parameters.AddWithValue("@email", recLocale.email);
+                                comandoSQL.Parameters.AddWithValue("@plus", recLocale.funzioniPlus);
                                 comandoSQL.Parameters.AddWithValue("@md5Password", crittoMd5.creaMD5(recLocale.password));
 
                                 comandoSQL.CommandText = stringaSql;
@@ -883,14 +1048,15 @@ namespace moneyBox
                                         comandoSQL.Parameters.AddWithValue("@nome", recLocale.nome);
                                         comandoSQL.Parameters.AddWithValue("@cognome", recLocale.cognome);
                                         comandoSQL.Parameters.AddWithValue("@email", recLocale.email);
+                                        comandoSQL.Parameters.AddWithValue("@plus", recLocale.funzioniPlus);
                                         comandoSQL.Parameters.AddWithValue("@md5Password", crittoMd5.creaMD5(recLocale.password));
                                         if (recLocale.password.ToString().Length > 0)
                                         {
-                                            stringaSql = "Update utenti Set nome = @nome, cognome = @cognome, email = @email, md5Password = @md5Password, md5PasswordSmart = '' Where idUtente= @idUtente";
+                                            stringaSql = "Update utenti Set nome = @nome, cognome = @cognome, email = @email, plus = @plus, md5Password = @md5Password, md5PasswordSmart = '' Where idUtente= @idUtente";
                                         }
                                         else
                                         {
-                                            stringaSql = "Update utenti Set nome = @nome, cognome = @cognome, email = @email Where idUtente= @idUtente";
+                                            stringaSql = "Update utenti Set nome = @nome, cognome = @cognome, email = @email, plus = @plus  Where idUtente= @idUtente";
                                         }
                                         comandoSQL.CommandText = stringaSql;
                                         comandoSQL.Connection = Connessione;
@@ -1518,8 +1684,8 @@ namespace moneyBox
             {
             string testoPiePagina= testoHtml +
                                    "<br> <br> <br> <br> <br> " +
-                                   "per scaricare l'ultima versione dell'APP Android MONEY SMART, fai clic sul seguente link:  <br>" +
-                                   "<a href='https://www.moneysmart.cloud/download.html'>https://www.moneysmart.cloud/download.html </a><br> ";
+                                   "per scaricare l'ultima versione dell'APP MONEY SMART, fai clic sul seguente link:  <br>" +
+                                   "<a href='https://www.moneysmart.cloud/install.html'>https://www.moneysmart.cloud/install.html </a><br> ";
             return testoPiePagina;
             }
 

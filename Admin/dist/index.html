@@ -23,8 +23,8 @@
     <script src="js/jsScriptComuni.js"></script>
     <script src="js/jsCassa.js"></script>
     <script src="js/jsLocali.js"></script>
-
     <script src="js/jsUtenti.js"></script>
+    <script src="js/jsAnalisi.js"></script>
     <script src="js/download.js"></script>
     <style>
         a.menuColorato {
@@ -162,6 +162,7 @@
                     <a class="dropdown-item" onclick="attivaArea('cassa');"> Cassa </a>
                     <a class="dropdown-item" onclick="attivaArea('utenti');"> Agenti </a>
                     <a class="dropdown-item" onclick="attivaArea('locali');"> Locali </a>
+                    <a class="dropdown-item" onclick="attivaArea('analisi');"> Analisi </a>
                     <div class="dropdown-divider"> </div>
                     <a class="dropdown-item" onclick="$('#panelCambiaPassword').modal('show');"> Cambia password </a>
                     <div class="dropdown-divider"> </div>
@@ -175,7 +176,7 @@
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                 <div class="sb-sidenav-menu">
                     <div class="nav">
-                        <div class="sb-sidenav-menu-heading"> Menù (v. 20.06.28) </div>
+                        <div class="sb-sidenav-menu-heading"> Menù (v. 15.07.20) </div>
                         <a class="nav-link" href="#" onclick="attivaArea('cassa');">
                             <div class="sb-nav-link-icon"> <i class="fas fa-coins"> </i> </div>
                             Cassa
@@ -188,6 +189,11 @@
                             <div class="sb-nav-link-icon"> <i class="fas fa-hotel"> </i> </div>
                             Locali
                         </a>
+                        <a class="nav-link" href="#" onclick="attivaArea('analisi');">
+                            <div class="sb-nav-link-icon"> <i class="fas fa-search"> </i> </div>
+                            Analisi
+                        </a>
+
                         <a class="nav-link" href="#" onclick="btnDownloadApk();">
                             <div class="sb-nav-link-icon"> <i class="fas fa-download"> </i> </div>
                             Money Smart
@@ -205,10 +211,10 @@
                 <div class="container-fluid">
                     <h1 class="mt-4" style="padding-bottom: 4px; padding-left: 4px; ">CASSA</h1>
                     <!--
-                    <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item active">&nbsp;</li>
-                    </ol>
-                    -->
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">&nbsp;</li>
+            </ol>
+            -->
 
                     <div class="row">
                         <div class="col-xl-3 col-md-6">
@@ -264,9 +270,9 @@
                                         <td width="10px">&nbsp;</td>
                                         <td><button type="button" class="btn btn-light" onclick="cambiaPagina('*');"><i class="far fa-eye"> </i></button></td>
                                         <td width="100%">&nbsp;</td>
-                                        <td><button type="button"  style="width: 125px;" class="btn btn-danger" onclick="btnRicercaCassa();"><i class="fas fa-redo-alt"></i>&nbsp; Annulla</button></td>
+                                        <td><button type="button" style="width: 125px;" class="btn btn-danger" onclick="btnRicercaCassa();"><i class="fas fa-redo-alt"></i>&nbsp; Annulla</button></td>
                                         <td width="10px">&nbsp;</td>
-                                        <td><button type="button" style="width: 125px;" class="btn btn-success" onclick="salvaModificheCassa();"  ><i class="fas fa-pencil-alt"></i>&nbsp; Salva </button></td>
+                                        <td><button type="button" style="width: 125px;" class="btn btn-success" onclick="salvaModificheCassa();"><i class="fas fa-pencil-alt"></i>&nbsp; Salva </button></td>
 
 
                                     </tr>
@@ -393,11 +399,11 @@
                                             <th> Nome</th>
                                             <th> Cognome</th>
                                             <th> email</th>
+                                            <th title="superpoteri PDF">+Plus</th>
                                             <th> password</th>
                                             <th> &nbsp;</th>
                                         </tr>
                                     </thead>
-
                                     <tbody id="datiTabellaUtenti">
                                     </tbody>
                                 </table>
@@ -406,6 +412,50 @@
                     </div>
                 </div>
             </main>
+
+            <main id="pagAnalisi">
+                <div class="container-fluid">
+                    <h1 class="mt-4" style="padding-bottom: 4px; padding-left: 4px; ">Analisi</h1>
+                    <br />
+                    <table class="table-responsive">
+                            <tr>
+                                <td width="20px">&nbsp;</td>
+                                <td valign="middle"> Data: &nbsp;</td>
+                                <td width="20px">&nbsp;</td>
+                                <td><input type="date" class="form-control" id="dataAnalisi" placeholder="gg/mm/aaaa"> </td>
+                                <td width="100%">&nbsp;</td>
+                            </tr>
+                    </table>
+                    <br />
+                    <div class="card mb-4">
+
+                        <div class="card-header"> <i class="fas fa-table mr-1"> </i> <a href="#" class="listaMovimenti" onclick="btnLeggiAgentiPerAnalisi();">Lista agenti</a> <span id="lblNumAgentiPerAnalisi"></span></div>
+
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th> &nbsp;</th>
+                                            <th> Nome</th>
+                                            <th> Acconto</th>
+                                            <th> Recupero</th>
+                                            <th> da Riportare</th>
+                                            <th> &nbsp;</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="datiTabellaAnalisi">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+
+
 
             <footer class="py-4 bg-light mt-auto">
                 <div class="container-fluid">

@@ -38,6 +38,7 @@ function popolaTabellaUtenti(data) {
     var tdCognome = '';
     var tdEmail = '';
     var tdAltro = '';
+    var tdPlus = '';
     var tdConferma = '';
 
     var stringaHtml = "";
@@ -56,11 +57,15 @@ function popolaTabellaUtenti(data) {
                     tdNome = '<td style="color: #dc3545;"><del>' + val.nome + '</del></td>';
                     tdCognome = '<td style="color: #dc3545;"><del>'  + val.cognome + '</td>';
                     tdEmail = '<td style="color: #dc3545;"><del>'  + val.email + '</td>';
-                    tdAltro = '<td style="color: #dc3545;"><del><i class="far fa-eye-slash"></i>'  + '</td>';
+                    tdAltro = '<td style="color: #dc3545;"><del><i class="far fa-eye-slash"></i>' + '</td>';
+                    if (val.funzioniPlus == true){
+                        tdPlus = '<td> <i class="far fa-check-square"></i></td>';}
+                    else {
+                        tdPlus = '<td></td>';}
                     break
                 case 'X':
                     // Record originale
-                    tdStato = '<<td data-toggle="tooltip" data-placement="bottom" title="Originale"><i class="far fa-check-square"></i>' + '</td>';
+                    tdStato = '<td data-toggle="tooltip" data-placement="bottom" title="Originale"><i class="far fa-check-square"></i>' + '</td>';
                     tdConferma = '<td>' +
                         '<button type="button" onClick=editUtente("' + (riga - 1) + '") class="btn btn-light">Edit</button>&nbsp;' + 
                         '<button type="button" onClick=eliminaUtente("' + (riga - 1) + '") class="btn btn-light">Cancella</button>&nbsp;' + 
@@ -69,6 +74,12 @@ function popolaTabellaUtenti(data) {
                     tdCognome = '<td>' + val.cognome + '</td>';
                     tdEmail = '<td>' + val.email + '</td>';
                     tdAltro = '<td>&nbsp;<i class="far fa-eye-slash">'  + '</td>';
+                    if (val.funzioniPlus == true) {
+                        tdPlus = '<td> <i class="far fa-check-square"></i></td>';
+                    }
+                    else {
+                        tdPlus = '<td></td>';
+                    }
                     break
                 case 'M':
                     // record modificato
@@ -81,6 +92,12 @@ function popolaTabellaUtenti(data) {
                     tdCognome = '<td>' + val.cognome + '</td>';
                     tdEmail = '<td>' + val.email + '</td>';
                     tdAltro = '<td>&nbsp;<i class="far fa-eye-slash"></i>'  + '</td>';
+                    if (val.funzioniPlus == true) {
+                        tdPlus = '<td> <i class="far fa-check-square"></i></td>';
+                    }
+                    else {
+                        tdPlus = '<td></td>';
+                    }
                     break
                 case 'E':
                     // record in stato Editing
@@ -101,10 +118,17 @@ function popolaTabellaUtenti(data) {
                     tdAltro += '        </tr>';
                     tdAltro += '    </table>';
                     tdAltro += '</td>';
+                    if (val.funzioniPlus == true)
+                    {
+                        tdPlus = '<td><input type="checkbox" name="inPlus" id="inPlus" checked> </td>';
+                    }
+                    else
+                    {
+                        tdPlus = '<td><input type="checkbox" name="inPlus" id="inPlus"></td>';
+                    }
                     break
             }
-
-            stringaHtml += '<tr>' + tdStato + tdNome + tdCognome + tdEmail + tdAltro + tdConferma + '</tr>';
+            stringaHtml += '<tr>' + tdStato + tdNome + tdCognome + tdEmail + tdPlus + tdAltro + tdConferma + '</tr>';
         });
     }
     $('#datiTabellaUtenti').html(stringaHtml);
@@ -122,6 +146,10 @@ function salvaUtente(riga) {
             infoUtenti[riga].email = $('#inEmailUtente').val().trim();
             infoUtenti[riga].password = $('#inPasswordUtente').val().trim();
             infoUtenti[riga].ripetiPassword = $('#inPasswordUtenteRip').val().trim();
+            if ($('#inPlus').is(":checked"))
+                infoUtenti[riga].funzioniPlus = true;
+            else
+                infoUtenti[riga].funzioniPlus = false;
 
             if (infoUtenti[riga].nome.trim() != "" && infoUtenti[riga].email.trim() != "") {
                 if (infoUtenti[riga].idUtente == 0) {

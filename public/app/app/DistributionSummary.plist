@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>moneySmart.ipa</key>
+	<array>
+		<dict>
+			<key>architectures</key>
+			<array>
+				<string>arm64</string>
+			</array>
+			<key>certificate</key>
+			<dict>
+				<key>SHA1</key>
+				<string>466835DCC6EF0AC3E1A6787E187E524D6647B42E</string>
+				<key>dateExpires</key>
+				<string>10/07/2021</string>
+				<key>type</key>
+				<string>Apple Distribution</string>
+			</dict>
+			<key>entitlements</key>
+			<dict>
+				<key>application-identifier</key>
+				<string>HCUPXMHHV9.com.sisco.moneysmart</string>
+				<key>com.apple.developer.team-identifier</key>
+				<string>HCUPXMHHV9</string>
+				<key>get-task-allow</key>
+				<false/>
+			</dict>
+			<key>name</key>
+			<string>moneySmart.iOS.app</string>
+			<key>profile</key>
+			<dict>
+				<key>UUID</key>
+				<string>9e911165-04db-46e2-a785-2e704159da94</string>
+				<key>name</key>
+				<string>Money Smart 4 iPhone ad Hoc</string>
+			</dict>
+			<key>team</key>
+			<dict>
+				<key>id</key>
+				<string>HCUPXMHHV9</string>
+				<key>name</key>
+				<string>Salvatore Alfieri</string>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>
