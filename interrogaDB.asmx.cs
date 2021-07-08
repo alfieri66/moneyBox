@@ -628,10 +628,8 @@ namespace moneyBox
         {
             MySqlDataReader tabellaDettagli;
             tInfoAgenti infoAgenti = new tInfoAgenti();
-
             tIncassoTotaleAgenti agente = new tIncassoTotaleAgenti();
             List<tIncassoTotaleAgenti> agenti = new List<tIncassoTotaleAgenti>();
-
             tIncassoDettagliatoAgente dettaglioAgente = new tIncassoDettagliatoAgente();
             List<tIncassoDettagliatoAgente> dettaglioAgenti = new List<tIncassoDettagliatoAgente>();
 
@@ -706,9 +704,6 @@ namespace moneyBox
             }
             return stringaJson;
         }
-
-
-
 
         [WebMethod(EnableSession = true)]
         public string inviaMail(List<tDettaglioCassa> cassa, string dataIni, string dataFin, string utente, string locale)
@@ -1223,6 +1218,7 @@ namespace moneyBox
             string nomeAgente, destinatarioMail;
             Single totAcconto = 0, totRecupero=0, totDaRiportare=0;
             string filePdf = "", infoSorgente;
+            string pathFileName;
 
             cPdf documentoPdf = new cPdf();
             cCostanti.tOperazione dettaglio = new cCostanti.tOperazione();
@@ -1286,7 +1282,8 @@ namespace moneyBox
                 esito.messaggio = destinatarioMail + " -- " + infoSorgente + " -- " + filePdf;
 
                 filePdf =documentoPdf.pdfRapportoAgente(nomeAgente, email , periodoRiferimento,  totAcconto, totRecupero, totDaRiportare,  monete, carta, cassa);
-                
+                pathFileName = HttpContext.Current.Server.MapPath(costanti.pathRemoto + "/" + filePdf);
+
                 inviaPdf(destinatarioMail, infoSorgente, filePdf);
                 esito.esito = true;
                 esito.messaggio = destinatarioMail + " -- "  +  infoSorgente + " -- " + filePdf;
@@ -1362,9 +1359,6 @@ namespace moneyBox
                 }
 
                 filePdf = documentoPdf.pdfRapportoAgentePlus(nomeAgente, email, periodoRiferimento, totAcconto, totRecupero, totDaRiportare, monete, carta, targa, cassa);
-
-                inviaPdf(destinatarioMail, infoSorgente, filePdf);
-                inviaPdf(emailAgente, infoSorgente, filePdf);
 
                 esito.esito = true;
                 esito.messaggio = destinatarioMail + ", " + emailAgente + " -- " + infoSorgente + " -- " + filePdf;
@@ -1555,6 +1549,83 @@ namespace moneyBox
             stringaJson = JsonConvert.SerializeObject(recEsito);
             return stringaJson;
         }
+
+        [WebMethod(EnableSession = true)]
+        public string downloadPdfAgente(string dataIncasso, string idAgente)
+        {
+            string stringaJson;
+            tRecEsito esito;
+            string periodoRiferimento;
+            Single totAcconto = 0, totRecupero = 0, totDaRiportare = 0;
+            string filePdf = "", infoSorgente;
+            string nomeAgente="";
+            string emailAgente="";
+            int riga = 0;
+            float monete = 0;
+            float carta = 0;
+            string targa = "";
+            string fileDownload = "";
+            WebClient downloadAgent = new WebClient();
+
+
+            cPdf documentoPdf = new cPdf();
+            cCostanti.tOperazione dettaglio = new cCostanti.tOperazione();
+            List<cCostanti.tOperazione> cassa = new List<cCostanti.tOperazione>();
+
+            esito.esito = true;
+            esito.messaggio = "-";
+            if (apriDB())
+            {
+                infoSorgente = "Report: " + nomeAgente;
+                comandoSQL.Parameters.Clear();
+                comandoSQL.Parameters.AddWithValue("@dataIni", dataIncasso);
+                comandoSQL.Parameters.AddWithValue("@dataFin", dataIncasso);
+                comandoSQL.Parameters.AddWithValue("@idAgente", idAgente);
+                comandoSQL.CommandText = "Select locali.codiceLocale as codiceLocale, locali.nome as nomeLocale,  " +
+                    "incassi.data, incassi.acconto, incassi.daRiportare, incassi.recupero, utenti.email,  utenti.nome, utenti.cognome " +
+                    "from locali Inner join incassi on locali.idLocale = incassi.idLocale Inner join utenti on utenti.idUtente = incassi.idUtente " +
+                    "where date(incassi.data) >= @dataIni AND date(incassi.data) <= @dataFin AND incassi.idUtente = @idAgente " +
+                    "order by incassi.data DESC";
+
+                comandoSQL.Connection = Connessione;
+                tabella = comandoSQL.ExecuteReader();
+
+                if (tabella.HasRows)
+                {
+                    while (tabella.Read() == true)
+                    {
+                        riga++;
+                        if (riga==1)
+                        {
+                            nomeAgente = tabella["cognome"].ToString() + " " + tabella["nome"].ToString();
+                            emailAgente= tabella["email"].ToString();
+                        }
+                        dettaglio.codiceLocale = tabella["codiceLocale"].ToString();
+                        dettaglio.nomeLocale = tabella["nomeLocale"].ToString();
+                        dettaglio.data = tabella["data"].ToString();
+                        dettaglio.acconto = (float)tabella["acconto"];
+                        dettaglio.recupero = (float)tabella["recupero"];
+                        dettaglio.daRiportare = (float)tabella["daRiportare"];
+                        totAcconto += (float)tabella["acconto"];
+                        totRecupero += (float)tabella["recupero"];
+                        totDaRiportare += (float)tabella["daRiportare"];
+                        cassa.Add(dettaglio);
+                    }
+                }
+                chiudiDB();
+                periodoRiferimento = Convert.ToDateTime(dataIncasso).ToString("dd-MM-yyyy");
+                
+                filePdf = documentoPdf.pdfRapportoAgentePlus(nomeAgente, emailAgente, periodoRiferimento, totAcconto, totRecupero, totDaRiportare, monete, carta, targa, cassa);
+                fileDownload = costanti.pathRemotoWeb + "/" + filePdf;
+                esito.esito = true;
+                esito.messaggio = fileDownload;
+            }
+            stringaJson = JsonConvert.SerializeObject(esito);
+            return stringaJson;
+        }
+
+
+
 
 
         //elimina webMethod
