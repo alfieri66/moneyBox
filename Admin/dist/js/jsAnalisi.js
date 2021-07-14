@@ -8,7 +8,7 @@ function btnLeggiAgentiPerAnalisi() {
 
     attesa.style.display = "block";
     $.ajax({
-        url: costanti.pathWebServices + "leggiAgentiPerAnalisiTmp",
+        url: costanti.pathWebServices + "leggiAgentiPerAnalisi",
         type: "POST",
         data: datiJson,
         contentType: "application/json",
@@ -67,12 +67,19 @@ function popolaTabellaAgentiPerAnalisi(acconto, daRiportare, recupero, totali, d
                         stringaHtml += '<tr>' +
                             '           <td class="text-info">' + valDet.oraIncasso + '</td>' +
                             '           <td class="text-info">' + valDet.nomeLocale + '</td>' +
-                            '           <td class="text-info">' + valDet.cittaLocale + '</td>' +
-                            '           <td class="text-info" style = "text-align: right;" >' + valDet.acconto + '</td>' +
-                            '           <td class="text-info" style = "text-align: right;" >' + valDet.recupero + '</td>' +
-                            '           <td class="text-info" style = "text-align: right;" >' + valDet.daRiportare + '</td>'
+                            '           <td class="text-info">' + valDet.cittaLocale + '</td>'
+                        if (valDet.acconto == "00,00" && valDet.recupero == "00,00" && valDet.daRiportare == "00,00") {
+                            stringaHtml += '<td colspan=3 class="text-info" style = "text-align: left;" >** Operazione generica **</td>';
                         }
-                    });
+                        else
+                        {
+                            stringaHtml += '<td class="text-info" style = "text-align: right;" >' + valDet.acconto + '</td>' +
+                                '           <td class="text-info" style = "text-align: right;" >' + valDet.recupero + '</td>' +
+                                '           <td class="text-info" style = "text-align: right;" >' + valDet.daRiportare + '</td>';
+                        }
+                        stringaHtml += "</tr>";
+                    }
+                });
             stringaHtml += '</table>';
             }
             stringaHtml +=  '</div> </td></tr>';

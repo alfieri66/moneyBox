@@ -87,8 +87,11 @@ function logout() {
 }
 
 function successoLogout(msg) {
+    svuotaTabelle();
     attesa.style.display = "none";
     $("#pagLogin").modal('show');
+    $("#pagLogin").modal('show');
+    $("#lblRisultato").html("");
 }
 
 function erroreLogout() {
@@ -119,6 +122,7 @@ function successoLogin(msg) {
         $("#pagLogin").modal('show');
     }
     else {
+        svuotaTabelle();
         attesa.style.display = "none";
     }
 }
@@ -175,9 +179,11 @@ function successoEsisteUtente(msg) {
     if (dati.esito == true) {
         $("#pagLogin").modal('hide');
         attesa.style.display = "none";
+        $("#lblLogin").html(dati.messaggio);
     }
     else {
         $("#lblRisultato").html("Login errato!");
+
     }
 }
 
@@ -350,4 +356,18 @@ function erroreDownloadElenco(msg) {
     attesa.style.display = "none";
     dati = JSON.parse(stringaJSON);
     $("#lblMessaggio").html(dati.messaggio);
+}
+
+function svuotaTabelle() {
+    stringaHtml = "";
+    $('#datiTabella').html(stringaHtml);
+    $('#datiTabellaUtenti').html(stringaHtml);
+    $('#datiTabellaLocali').html(stringaHtml);
+    $('#datiTabellaAnalisi').html(stringaHtml);
+    $('#lblLogin').html(stringaHtml);
+
+    $('#txtNumPagine').html(stringaHtml);
+    $('#lblNumUtenti').html(stringaHtml);
+    $('#lblNumLocali').html(stringaHtml);
+    $('#lblNumAgentiPerAnalisi').html(stringaHtml);
 }
