@@ -99,7 +99,7 @@ namespace moneyBox
 
 
             //footer
-            pageFooterText = string.Format(" report del {0}, {1} ", currentTime.ToShortDateString(), currentTime.ToShortTimeString()) + "\n";
+            pageFooterText = string.Format(" report del {0} ", currentTime.ToShortDateString()) + "\n";
             Paragraph footer = page.Footers.Primary.AddParagraph();
             footer.AddText(pageFooterText);
             footer.Format.Alignment = ParagraphAlignment.Center;
@@ -140,6 +140,8 @@ namespace moneyBox
             foreach (var value in info)
             {
                 riga = table.AddRow();
+                int position = value.data.IndexOf(" ");
+                riga.Cells[0].AddParagraph(value.nomeLocale + "\n" + value.data.Substring(0, position));
                 riga.Cells[0].AddParagraph(value.nomeLocale + "\n" + value.data);
                 if (value.acconto==0)
                 {
@@ -233,7 +235,19 @@ namespace moneyBox
             riga.Cells[3].Format.Alignment = ParagraphAlignment.Right;
             riga.Cells[0].Style = "testoNero";
             riga.Cells[2].Style = "testoRosso";
-            
+
+            riga = table.AddRow();
+            riga.Style = "rigaBold";
+            riga.Cells[0].AddParagraph("\nCassa Generale\n\n");
+            riga.Cells[0].MergeRight = 1;
+            riga.Cells[2].AddParagraph("\n" + String.Format("{0:0,0.00}", acconto + monete + carta + recupero - daRiportare));
+            riga.Cells[3].AddParagraph("\n");
+            riga.Cells[0].Format.Alignment = ParagraphAlignment.Right;
+            riga.Cells[2].Format.Alignment = ParagraphAlignment.Right;
+            riga.Cells[3].Format.Alignment = ParagraphAlignment.Right;
+            riga.Cells[0].Style = "testoNero";
+            riga.Cells[2].Style = "testoNero";
+
             page.Add(table);
 
             PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer(true);
@@ -572,7 +586,7 @@ namespace moneyBox
             header.Format.Alignment = ParagraphAlignment.Left;
 
             //footer
-            pageFooterText = string.Format(" report del {0}, {1} ", currentTime.ToShortDateString(), currentTime.ToShortTimeString()) + "\n";
+            pageFooterText = string.Format(" report del {0} ", currentTime.ToShortDateString()) + "\n";
             Paragraph footer = page.Footers.Primary.AddParagraph();
             footer.AddText(pageFooterText);
             footer.Format.Alignment = ParagraphAlignment.Center;
@@ -613,11 +627,11 @@ namespace moneyBox
             foreach (var value in info)
             {
                 riga = table.AddRow();
-                
+                int position = value.data.IndexOf(" ");
 
                 if (value.acconto == 0 && value.recupero == 0 && value.daRiportare == 0)
                 {
-                    riga.Cells[0].AddParagraph(value.nomeLocale + "\n" + value.data);
+                    riga.Cells[0].AddParagraph(value.nomeLocale + "\n" + value.data.Substring(0,position));
                     riga.Cells[0].Style = "testoLightBlu";
                     riga.Cells[1].AddParagraph("*** OPERAZIONE GENERICA ***");
                     riga.Cells[1].Format.Alignment = ParagraphAlignment.Left;
@@ -625,7 +639,7 @@ namespace moneyBox
                 }
                 else
                 {
-                    riga.Cells[0].AddParagraph(value.nomeLocale + "\n" + value.data);
+                    riga.Cells[0].AddParagraph(value.nomeLocale + "\n" + value.data.Substring(0, position));
                     if (value.acconto == 0)
                     {
                         riga.Cells[1].AddParagraph("");
@@ -722,6 +736,18 @@ namespace moneyBox
             riga.Cells[3].Format.Alignment = ParagraphAlignment.Right;
             riga.Cells[0].Style = "testoNero";
             riga.Cells[2].Style = "testoRosso";
+
+            riga = table.AddRow();
+            riga.Style = "rigaBold";
+            riga.Cells[0].AddParagraph("\nCassa Generale\n\n");
+            riga.Cells[0].MergeRight = 1;
+            riga.Cells[2].AddParagraph("\n" + String.Format("{0:0,0.00}", acconto + monete + carta + recupero - daRiportare));
+            riga.Cells[3].AddParagraph("\n");
+            riga.Cells[0].Format.Alignment = ParagraphAlignment.Right;
+            riga.Cells[2].Format.Alignment = ParagraphAlignment.Right;
+            riga.Cells[3].Format.Alignment = ParagraphAlignment.Right;
+            riga.Cells[0].Style = "testoNero";
+            riga.Cells[2].Style = "testoNero";
 
             page.Add(table);
 

@@ -88,6 +88,9 @@ namespace moneyBox
             public string acconto;
             public string recupero;
             public string daRiportare;
+            public string totCassa;
+            public string flussoCassa;
+            public string cassaGenerale;
         }
 
         public struct tIncassoDettagliatoAgente
@@ -602,18 +605,20 @@ namespace moneyBox
             double totAcconto = 0;
             double totRecupero = 0;
             double totDaRiportare = 0;
+            double tmpCarta = 0;
+            double tmpMonete = 0;
 
             string stringaJson = "";
             if (apriDB())
             {
                 comandoSQL.Parameters.Clear();
-                comandoSQL.CommandText = "SELECT utenti.idUtente, utenti.cognome,utenti.nome, Sum(incassi.acconto) as totAcconto, sum(incassi.daRiportare) as totDaRiportare, Sum(incassi.recupero) as totRecupero " +
-                                         "from incassi inner join utenti on incassi.idUtente=utenti.idUtente " +
+                comandoSQL.CommandText = "SELECT utenti.idUtente, utenti.cognome,utenti.nome, Sum(incassi.acconto) as totAcconto, sum(incassi.daRiportare) as totDaRiportare, Sum(incassi.recupero) as totRecupero, infoincasso.monete, infoincasso.carta " +
+                                         "from incassi inner join utenti on incassi.idUtente = utenti.idUtente left join infoincasso on utenti.idUtente = infoincasso.idUtente and date(incassi.data)= date(infoincasso.dataIniRiepilogo) and date(incassi.data)= date(infoincasso.dataFineRiepilogo) " +
                                          "where date(incassi.data) = @dataIncasso " +
-                                         "group by utenti.idUtente, utenti.Nome,utenti.Cognome " +
-                                         "order by utenti.cognome,utenti.nome ";
-                comandoSQL.Parameters.AddWithValue("@dataIncasso", dataIncasso);
+                                         "group by utenti.idUtente, utenti.Nome,utenti.Cognome, infoincasso.monete, infoincasso.carta " +
+                                         "order by utenti.cognome, utenti.nome ";
 
+                comandoSQL.Parameters.AddWithValue("@dataIncasso", dataIncasso);
                 comandoSQL.Connection = Connessione;
                 tabella = comandoSQL.ExecuteReader();
                 if (tabella.HasRows)
@@ -626,6 +631,19 @@ namespace moneyBox
                         agente.acconto = String.Format("{0:0,0.00}", (double)tabella["totAcconto"]);
                         agente.daRiportare = String.Format("{0:0,0.00}", (double)tabella["totDaRiportare"]);
                         agente.recupero = String.Format("{0:0,0.00}", (double)tabella["totRecupero"]);
+                        
+                        if (tabella["monete"].ToString() == "")
+                            tmpMonete = 0;
+                        else
+                            tmpMonete =  (float)tabella["monete"];
+                        if (tabella["carta"].ToString() == "")
+                            tmpCarta = 0;
+                        else
+                            tmpCarta = (float)tabella["carta"];
+                        
+                        agente.totCassa = String.Format("{0:0,0.00}", tmpCarta + tmpMonete + (double)tabella["totRecupero"]);
+                        agente.flussoCassa = String.Format("{0:0,0.00}", tmpCarta + tmpMonete + (double)tabella["totRecupero"] - (double)tabella["totDaRiportare"]);
+                        agente.cassaGenerale= String.Format("{0:0,0.00}", (double)tabella["totAcconto"] + tmpCarta + tmpMonete + (double)tabella["totRecupero"] - (double)tabella["totDaRiportare"]);
                         agenti.Add(agente);
                     }
                 }
@@ -664,7 +682,7 @@ namespace moneyBox
                 infoAgenti.totAcconto = String.Format("{0:0,0.00}", totAcconto);
                 infoAgenti.totDaRiportare = String.Format("{0:0,0.00}", totDaRiportare);
                 infoAgenti.totRecupero = String.Format("{0:0,0.00}", totRecupero);
-                
+
                 chiudiDB();
                 stringaJson = JsonConvert.SerializeObject(infoAgenti);
             }
@@ -1849,10 +1867,12 @@ namespace moneyBox
         [WebMethod(EnableSession = true)]
         public void prova()
         {
-            float carta = 0;
-            float monete = 0;
-            string targa = "";
-            leggiInfoIncassi(28, "2021-07-01", "2021-07-01", ref  carta, ref  monete, ref  targa);
+            float carta = 900;
+            float monete = 1200;
+            string targa = "Punto Azzurro RX789AA";
+            string email = "neri@test.it";
+
+            pdfCassaUtentePlus(email, "2021-07-01", "2021-07-01", carta, monete, targa);
         }
 
     }

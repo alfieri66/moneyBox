@@ -48,12 +48,20 @@ function popolaTabellaAgentiPerAnalisi(acconto, daRiportare, recupero, totali, d
 
     var stringaHtml = "";
     var riga = 0;
+
     if (totali.length > 0) {
         $.each(totali, function (key, val) {
             riga++;
             areaCollapse = "collapse_" + riga.toString();
             tdStato = '<td data-toggle="tooltip" data-placement="bottom" title="Link"><i class="fas fa-external-link-alt" data-toggle="collapse" data-target="#' + areaCollapse +'")></i></td>';
-            tdNome = '<td>' + val.nomeUtente + '</td>';
+            tdNome = '<td>' + val.nomeUtente +
+                '<br>' +
+                '<span class="text-success">Tot. cassa: ' + val.totCassa + "</span>" +
+                '<br>' +
+                '<span class="text-success">Flusso di cassa: ' + val.flussoCassa + "</span>" +
+                '<br>' +
+                '<span class="text-danger">Cassa Generale: ' + val.cassaGenerale + "</span>" +
+                '</td>';
             tdRecupero = '<td style="text-align: right;">' + val.recupero + '</td>';
             tdDaRiportare = '<td style="text-align: right;">' + val.daRiportare + '</td>';
             tdAcconto = '<td style="text-align: right;">' + val.acconto+ '</td>';
